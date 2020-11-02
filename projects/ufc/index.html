@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>UFC Data analysis</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/assets/css/layouts/main.css"/>
+<link rel="stylesheet" href="/assets/css/style.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/navbar.css"/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;500;600" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+
+
+<link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+
+
+<link rel="stylesheet" href="/assets/css/style.css"/>
+
+    
+<meta name="description" content="UFC Data analysis" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/assets/css/layouts/single.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/sidebar.css">
+
+
+    
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <a class="navbar-brand" href="/">
+      AMIT PHADKE</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+      
+      <li id="nav-item"><a href="http://example.org/#projects" data-filter="all" class="nav-link">All Projects</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <img src="/assets/images/main-logo.png" class="d-none" id="main-logo">
+  <img src="/assets/images/inverted-logo.png" class="d-none" id="inverted-logo">
+</nav>
+
+
+
+      
+      
+
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(http://example.org/images/projects/ufc.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        
+
+        <div class="title">
+          <h1>UFC Data analysis</h1>
+        </div>
+
+        <div class="post-content" id="post-content">
+          <h4 id="introduction">Introduction</h4>
+<p>The Ultimate Fighting Championship is one of the fastest growing sport in the world. Since its inception in 1993 it has gained a lot of popularity and its fighters have reached celebrity status. The following project will try to gain insights by visualizing and analyzing data taken from different sources such as wikipedia.com, kaggle.com and fightmetrics.com.</p>
+<h4 id="datasets">Datasets</h4>
+<p>We will make the use of two datasets for this project. The first one is a named &lsquo;fight-eda&rsquo; is a collection of all the fights scheduled by the UFC since 1993. The second is a Biography and Statistics of all the fighters that have been a part of the UFC. The fighter&rsquo;s records are cumalative of their entire career across many MMA promotions.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Required libries</span>
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns <span style="color:#75715e">#visualisation</span>
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt <span style="color:#75715e">#visualisation</span>
+<span style="color:#f92672">import</span> altair <span style="color:#f92672">as</span> alt
+<span style="color:#f92672">from</span> sklearn.cluster <span style="color:#f92672">import</span> KMeans
+<span style="color:#f92672">import</span> re
+<span style="color:#f92672">%</span>matplotlib inline
+sns<span style="color:#f92672">.</span>set(color_codes<span style="color:#f92672">=</span>True)
+</code></pre></div><h4 id="exploring-data-of-bouts">Exploring Data of Bouts</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Dataset for the bouts</span>
+df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_excel(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;fight_eda.xlsx&#34;</span>)
+df<span style="color:#f92672">.</span>head()
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>R_fighter</th>
+      <th>B_fighter</th>
+      <th>R_KD</th>
+      <th>B_KD</th>
+      <th>R_SIG_STR.</th>
+      <th>R_SIG_STR_ATT</th>
+      <th>B_SIG_STR.</th>
+      <th>B_SIG_STR_ATT</th>
+      <th>R_SIG_STR_pct</th>
+      <th>B_SIG_STR_pct</th>
+      <th>...</th>
+      <th>B_GROUND</th>
+      <th>B_GROUND_ATT</th>
+      <th>win_by</th>
+      <th>last_round</th>
+      <th>Format</th>
+      <th>date</th>
+      <th>location</th>
+      <th>Winner</th>
+      <th>Championship Bout</th>
+      <th>Weight Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Henry Cejudo</td>
+      <td>Marlon Moraes</td>
+      <td>0</td>
+      <td>0</td>
+      <td>90</td>
+      <td>171</td>
+      <td>57</td>
+      <td>119</td>
+      <td>0.52</td>
+      <td>0.47</td>
+      <td>...</td>
+      <td>1</td>
+      <td>1</td>
+      <td>KO/TKO</td>
+      <td>3</td>
+      <td>5 Rnd (5-5-5-5-5)</td>
+      <td>6/8/2019</td>
+      <td>Chicago, Illinois, USA</td>
+      <td>Henry Cejudo</td>
+      <td>YES</td>
+      <td>Bantamweight</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Valentina Shevchenko</td>
+      <td>Jessica Eye</td>
+      <td>1</td>
+      <td>0</td>
+      <td>8</td>
+      <td>11</td>
+      <td>2</td>
+      <td>12</td>
+      <td>0.72</td>
+      <td>0.16</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>KO/TKO</td>
+      <td>2</td>
+      <td>5 Rnd (5-5-5-5-5)</td>
+      <td>6/8/2019</td>
+      <td>Chicago, Illinois, USA</td>
+      <td>Valentina Shevchenko</td>
+      <td>YES</td>
+      <td>Women's Flyweight</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Tony Ferguson</td>
+      <td>Donald Cerrone</td>
+      <td>0</td>
+      <td>0</td>
+      <td>104</td>
+      <td>200</td>
+      <td>68</td>
+      <td>185</td>
+      <td>0.52</td>
+      <td>0.36</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>TKO - Doctor's Stoppage</td>
+      <td>2</td>
+      <td>3 Rnd (5-5-5)</td>
+      <td>6/8/2019</td>
+      <td>Chicago, Illinois, USA</td>
+      <td>Tony Ferguson</td>
+      <td>NO</td>
+      <td>Lightweight</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Jimmie Rivera</td>
+      <td>Petr Yan</td>
+      <td>0</td>
+      <td>2</td>
+      <td>73</td>
+      <td>192</td>
+      <td>56</td>
+      <td>189</td>
+      <td>0.38</td>
+      <td>0.29</td>
+      <td>...</td>
+      <td>4</td>
+      <td>10</td>
+      <td>Decision - Unanimous</td>
+      <td>3</td>
+      <td>3 Rnd (5-5-5)</td>
+      <td>6/8/2019</td>
+      <td>Chicago, Illinois, USA</td>
+      <td>Petr Yan</td>
+      <td>NO</td>
+      <td>Bantamweight</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Tai Tuivasa</td>
+      <td>Blagoy Ivanov</td>
+      <td>0</td>
+      <td>1</td>
+      <td>64</td>
+      <td>144</td>
+      <td>73</td>
+      <td>123</td>
+      <td>0.44</td>
+      <td>0.59</td>
+      <td>...</td>
+      <td>6</td>
+      <td>6</td>
+      <td>Decision - Unanimous</td>
+      <td>3</td>
+      <td>3 Rnd (5-5-5)</td>
+      <td>6/8/2019</td>
+      <td>Chicago, Illinois, USA</td>
+      <td>Blagoy Ivanov</td>
+      <td>NO</td>
+      <td>Heavyweight</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 54 columns</p>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Win Methods by Weight Class</span>
+df1 <span style="color:#f92672">=</span> df[[<span style="color:#e6db74">&#39;win_by&#39;</span>,<span style="color:#e6db74">&#39;Weight Class&#39;</span>]]
+df2 <span style="color:#f92672">=</span> df1<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#39;Weight Class&#39;</span>, <span style="color:#e6db74">&#39;win_by&#39;</span>])[<span style="color:#e6db74">&#39;Weight Class&#39;</span>]<span style="color:#f92672">.</span>count()<span style="color:#f92672">.</span>unstack(<span style="color:#e6db74">&#39;win_by&#39;</span>)<span style="color:#f92672">.</span>fillna(<span style="color:#ae81ff">0</span>)
+plt<span style="color:#f92672">.</span>rcParams[<span style="color:#e6db74">&#34;figure.figsize&#34;</span>] <span style="color:#f92672">=</span> (<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">8</span>)
+df2[[<span style="color:#e6db74">&#39;KO/TKO&#39;</span>,<span style="color:#e6db74">&#39;Submission&#39;</span>,<span style="color:#e6db74">&#39;Decision - Unanimous&#39;</span>,<span style="color:#e6db74">&#39;Decision - Split&#39;</span>]]<span style="color:#f92672">.</span>plot(kind<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bar&#39;</span>, stacked<span style="color:#f92672">=</span>True)
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#39;Win Methods by Weight Class&#39;</span>)
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Win Methods by Weight Class')
+</code></pre>
+<p><img src="/images/projects/output_5_1.png" alt="1"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Bout Type by Weight Class</span>
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">8</span>))
+ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>countplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Weight Class&#39;</span>,hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Championship Bout&#39;</span>,data<span style="color:#f92672">=</span>df)
+ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Championship bouts by Weight Class&#39;</span>)
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Championship bouts by Weight Class')
+</code></pre>
+<p><img src="/images/projects/output_6_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Win Method by Bout Type</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">win_method</span>(x):
+    <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;KO/TKO&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;TKO - Doctor&#39;s Stoppage&#34;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Submission&#39;</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Finishes&#39;</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Decisions&#39;</span>
+
+df[<span style="color:#e6db74">&#39;win_method&#39;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;win_by&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: win_method(x))
+
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">8</span>))
+ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>countplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;win_by&#39;</span>,hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Championship Bout&#39;</span>,data<span style="color:#f92672">=</span>df)
+ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Win Method for Normal and Championship Bouts&#39;</span>)
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Win Method for Normal and Championship Bouts')
+</code></pre>
+<p><img src="/images/projects/output_7_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_finishes <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>loc[df[<span style="color:#e6db74">&#39;win_by&#39;</span>]<span style="color:#f92672">.</span>isin([<span style="color:#e6db74">&#39;KO/TKO&#39;</span>,<span style="color:#e6db74">&#34;TKO - Doctor&#39;s Stoppage&#34;</span>,<span style="color:#e6db74">&#39;Submission&#39;</span>])]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Finishes vs Decisions</span>
+df<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;win_method&#39;</span>)<span style="color:#f92672">.</span>size()<span style="color:#f92672">.</span>plot(kind<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bar&#39;</span>)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x257dd63cc08&gt;
+</code></pre>
+<p><img src="/images/projects/output_9_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Strikers vs Grapplers</span>
+df_finishes<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;win_by&#39;</span>)<span style="color:#f92672">.</span>size()<span style="color:#f92672">.</span>plot(kind<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;pie&#39;</span>, autopct<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%.2f</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x257ddd9de48&gt;
+</code></pre>
+<p><img src="/images/projects/output_10_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Round By Round Analysis</span>
+df[<span style="color:#e6db74">&#39;last_round&#39;</span>]<span style="color:#f92672">=</span>pd<span style="color:#f92672">.</span>to_numeric(df<span style="color:#f92672">.</span>last_round)
+df1 <span style="color:#f92672">=</span>  df<span style="color:#f92672">.</span>loc[df[<span style="color:#e6db74">&#39;win_by&#39;</span>]<span style="color:#f92672">.</span>isin([<span style="color:#e6db74">&#39;KO/TKO&#39;</span>,<span style="color:#e6db74">&#39;Submission&#39;</span>])]
+sns<span style="color:#f92672">.</span>countplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;last_round&#39;</span>,data<span style="color:#f92672">=</span>df1)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x257ddbb20c8&gt;
+</code></pre>
+<p><img src="/images/projects/output_11_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Preparing Data Set</span>
+df[<span style="color:#e6db74">&#39;R_corner&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(df[<span style="color:#e6db74">&#39;R_fighter&#39;</span>]<span style="color:#f92672">==</span>df[<span style="color:#e6db74">&#39;Winner&#39;</span>],<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>)
+df[<span style="color:#e6db74">&#39;B_corner&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(df[<span style="color:#e6db74">&#39;B_fighter&#39;</span>]<span style="color:#f92672">==</span>df[<span style="color:#e6db74">&#39;Winner&#39;</span>],<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>)
+
+r_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;R_fighter&#39;</span>, <span style="color:#e6db74">&#39;B_fighter&#39;</span>,<span style="color:#e6db74">&#39;R_KD&#39;</span>,<span style="color:#e6db74">&#39;R_SIG_STR.&#39;</span>,<span style="color:#e6db74">&#39;R_SIG_STR_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_SIG_STR_pct&#39;</span>,<span style="color:#e6db74">&#39;R_TOTAL_STR.&#39;</span>,
+               <span style="color:#e6db74">&#39;R_TOTAL_STR_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_TD&#39;</span>, <span style="color:#e6db74">&#39;R_TD_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_TD_pct&#39;</span>,<span style="color:#e6db74">&#39;R_SUB_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_PASS&#39;</span>,
+               <span style="color:#e6db74">&#39;R_REV&#39;</span>,<span style="color:#e6db74">&#39;R_HEAD&#39;</span>, <span style="color:#e6db74">&#39;R_HEAD_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_BODY&#39;</span>, <span style="color:#e6db74">&#39;R_BODY_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_LEG&#39;</span>, <span style="color:#e6db74">&#39;R_LEG_ATT&#39;</span>,
+               <span style="color:#e6db74">&#39;R_CLINCH&#39;</span>, <span style="color:#e6db74">&#39;R_CLINCH_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_GROUND&#39;</span>,<span style="color:#e6db74">&#39;R_GROUND_ATT&#39;</span>,<span style="color:#e6db74">&#39;R_corner&#39;</span>,
+               <span style="color:#e6db74">&#39;win_by&#39;</span>, <span style="color:#e6db74">&#39;last_round&#39;</span>,<span style="color:#e6db74">&#39;Championship Bout&#39;</span>]
+b_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;R_fighter&#39;</span>, <span style="color:#e6db74">&#39;B_fighter&#39;</span>,<span style="color:#e6db74">&#39;B_KD&#39;</span>,<span style="color:#e6db74">&#39;B_SIG_STR.&#39;</span>,<span style="color:#e6db74">&#39;B_SIG_STR_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_SIG_STR_pct&#39;</span>,<span style="color:#e6db74">&#39;B_TOTAL_STR.&#39;</span>,
+              <span style="color:#e6db74">&#39;B_TOTAL_STR_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_TD&#39;</span>, <span style="color:#e6db74">&#39;B_TD_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_TD_pct&#39;</span>,<span style="color:#e6db74">&#39;B_SUB_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_PASS&#39;</span>,
+              <span style="color:#e6db74">&#39;B_REV&#39;</span>,<span style="color:#e6db74">&#39;B_HEAD&#39;</span>, <span style="color:#e6db74">&#39;B_HEAD_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_BODY&#39;</span>, <span style="color:#e6db74">&#39;B_BODY_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_LEG&#39;</span>, <span style="color:#e6db74">&#39;B_LEG_ATT&#39;</span>,
+              <span style="color:#e6db74">&#39;B_CLINCH&#39;</span>,<span style="color:#e6db74">&#39;B_CLINCH_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_GROUND&#39;</span>,<span style="color:#e6db74">&#39;B_GROUND_ATT&#39;</span>,<span style="color:#e6db74">&#39;B_corner&#39;</span>,
+              <span style="color:#e6db74">&#39;win_by&#39;</span>, <span style="color:#e6db74">&#39;last_round&#39;</span>,<span style="color:#e6db74">&#39;Championship Bout&#39;</span>]
+s_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;R_fighter&#39;</span>,<span style="color:#e6db74">&#39;B_fighter&#39;</span>,<span style="color:#e6db74">&#39;KD&#39;</span>,<span style="color:#e6db74">&#39;SIG_STR.&#39;</span>,<span style="color:#e6db74">&#39;SIG_STR_ATT&#39;</span>,<span style="color:#e6db74">&#39;SIG_STR_pct&#39;</span>,<span style="color:#e6db74">&#39;TOTAL_STR.&#39;</span>,
+                                   <span style="color:#e6db74">&#39;TOTAL_STR_ATT&#39;</span>,<span style="color:#e6db74">&#39;TD&#39;</span>,<span style="color:#e6db74">&#39;TD_ATT&#39;</span>,<span style="color:#e6db74">&#39;TD_pct&#39;</span>,<span style="color:#e6db74">&#39;SUB_ATT&#39;</span>,<span style="color:#e6db74">&#39;PASS&#39;</span>,<span style="color:#e6db74">&#39;REV&#39;</span>,<span style="color:#e6db74">&#39;HEAD&#39;</span>,<span style="color:#e6db74">&#39;HEAD_ATT&#39;</span>,
+                                   <span style="color:#e6db74">&#39;BODY&#39;</span>, <span style="color:#e6db74">&#39;BODY_ATT&#39;</span>,<span style="color:#e6db74">&#39;LEG&#39;</span>, <span style="color:#e6db74">&#39;LEG_ATT&#39;</span>,<span style="color:#e6db74">&#39;CLINCH&#39;</span>,<span style="color:#e6db74">&#39;CLINCH_ATT&#39;</span>,<span style="color:#e6db74">&#39;GROUND&#39;</span>,<span style="color:#e6db74">&#39;GROUND_ATT&#39;</span>,
+                                   <span style="color:#e6db74">&#39;win_corner&#39;</span>,<span style="color:#e6db74">&#39;win_by&#39;</span>,<span style="color:#e6db74">&#39;last_round&#39;</span>,<span style="color:#e6db74">&#39;Championship Bout&#39;</span>]
+
+r_stats <span style="color:#f92672">=</span> df[r_columns]
+b_stats <span style="color:#f92672">=</span> df[b_columns]
+df_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(columns <span style="color:#f92672">=</span> s_columns)
+
+bdf <span style="color:#f92672">=</span> dict(zip(r_stats, df_stats))
+r_stats<span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>bdf,inplace<span style="color:#f92672">=</span>True)
+rdf <span style="color:#f92672">=</span> dict(zip(b_stats, df_stats))
+b_stats<span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>rdf,inplace<span style="color:#f92672">=</span>True)
+
+winner_stats <span style="color:#f92672">=</span> b_stats<span style="color:#f92672">.</span>append(r_stats, ignore_index<span style="color:#f92672">=</span>True)
+</code></pre></div><pre><code>C:\Users\phadk\Anaconda3\lib\site-packages\pandas\core\frame.py:4133: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  errors=errors,
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#striking</span>
+sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;SIG_STR.&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;TOTAL_STR_ATT&#39;</span>,data<span style="color:#f92672">=</span>winner_stats)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x23919270248&gt;
+</code></pre>
+<p><img src="/images/projects/output_13_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Striking while clinching and on the ground</span>
+fig, (ax1, ax2) <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)
+fig<span style="color:#f92672">.</span>suptitle(<span style="color:#e6db74">&#39;Significant Strike by Position&#39;</span>)
+ax1<span style="color:#f92672">.</span>scatter(<span style="color:#e6db74">&#39;CLINCH&#39;</span>,<span style="color:#e6db74">&#39;SIG_STR.&#39;</span>,data<span style="color:#f92672">=</span>winner_stats,color<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;red&#39;</span>)
+ax2<span style="color:#f92672">.</span>scatter(<span style="color:#e6db74">&#39;GROUND&#39;</span>,<span style="color:#e6db74">&#39;SIG_STR.&#39;</span>,data<span style="color:#f92672">=</span>winner_stats,color<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;black&#39;</span>)
+</code></pre></div><pre><code>&lt;matplotlib.collections.PathCollection at 0x257dd7f6648&gt;
+</code></pre>
+<p><img src="/images/projects/output_14_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Striking on Head, Body and Legs</span>
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">8</span>))
+ax1 <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;TOTAL_STR_ATT&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;HEAD&#39;</span>,data<span style="color:#f92672">=</span>winner_stats, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Head Strikes&#39;</span>)
+ax2 <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;TOTAL_STR_ATT&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;BODY&#39;</span>,data<span style="color:#f92672">=</span>winner_stats,label<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Body Strikes&#39;</span>)
+ax3 <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;TOTAL_STR_ATT&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;LEG&#39;</span>,data<span style="color:#f92672">=</span>winner_stats,label<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Leg Strikes&#39;</span>)
+plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;Strike Location&#34;</span>)
+plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;Total Strikes&#34;</span>)
+</code></pre></div><pre><code>Text(0, 0.5, 'Total Strikes')
+</code></pre>
+<p><img src="/images/projects/output_15_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Grappling Overview</span>
+fig, (ax1, ax2) <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)
+fig<span style="color:#f92672">.</span>suptitle(<span style="color:#e6db74">&#39;Avg Guard Passes and Takedowns per match&#39;</span>)
+ax1<span style="color:#f92672">.</span>hist(<span style="color:#e6db74">&#39;PASS&#39;</span>,data<span style="color:#f92672">=</span>winner_stats,color<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;red&#39;</span>)
+ax2<span style="color:#f92672">.</span>hist(<span style="color:#e6db74">&#39;TD&#39;</span>,data<span style="color:#f92672">=</span>winner_stats,color<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;black&#39;</span>)
+</code></pre></div><pre><code>(array([5484., 2246., 1057.,  631.,  353.,  246.,  139.,   71.,   34.,
+          27.]),
+ array([0. , 0.9, 1.8, 2.7, 3.6, 4.5, 5.4, 6.3, 7.2, 8.1, 9. ]),
+ &lt;a list of 10 Patch objects&gt;)
+</code></pre>
+<p><img src="/images/projects/output_16_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Correlation between variables</span>
+accuracy <span style="color:#f92672">=</span> winner_stats[[<span style="color:#e6db74">&#39;SIG_STR.&#39;</span>,<span style="color:#e6db74">&#39;TOTAL_STR.&#39;</span>,<span style="color:#e6db74">&#39;SIG_STR_pct&#39;</span>,<span style="color:#e6db74">&#39;TD_pct&#39;</span>,<span style="color:#e6db74">&#39;SUB_ATT&#39;</span>,<span style="color:#e6db74">&#39;PASS&#39;</span>, <span style="color:#e6db74">&#39;REV&#39;</span>,
+                         <span style="color:#e6db74">&#39;KD&#39;</span>,<span style="color:#e6db74">&#39;HEAD&#39;</span>,<span style="color:#e6db74">&#39;BODY&#39;</span>,<span style="color:#e6db74">&#39;LEG&#39;</span>,<span style="color:#e6db74">&#39;CLINCH&#39;</span>,<span style="color:#e6db74">&#39;GROUND&#39;</span>,<span style="color:#e6db74">&#39;win_corner&#39;</span>]]
+
+sns<span style="color:#f92672">.</span>heatmap(accuracy<span style="color:#f92672">.</span>corr(), xticklabels<span style="color:#f92672">=</span>accuracy<span style="color:#f92672">.</span>corr()<span style="color:#f92672">.</span>columns, yticklabels<span style="color:#f92672">=</span>accuracy<span style="color:#f92672">.</span>corr()<span style="color:#f92672">.</span>columns, annot<span style="color:#f92672">=</span>True, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x257dd869f88&gt;
+</code></pre>
+<p><img src="/images/projects/output_17_1.png" alt="png"></p>
+<h4 id="exploring-fighters-data">Exploring Fighters Data</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Fighter Data Set</span>
+fdf <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_excel(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;fighter_eda.xlsx&#34;</span>)
+fdf <span style="color:#f92672">=</span> fdf<span style="color:#f92672">.</span>loc[fdf[<span style="color:#e6db74">&#39;Status&#39;</span>]<span style="color:#f92672">.</span>isin([<span style="color:#e6db74">&#39;Active&#39;</span>])]
+fdf<span style="color:#f92672">.</span>head()
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Unnamed: 0</th>
+      <th>Fighter Name</th>
+      <th>Nickname</th>
+      <th>W</th>
+      <th>L</th>
+      <th>D</th>
+      <th>Height</th>
+      <th>Weight</th>
+      <th>Reach</th>
+      <th>Stance</th>
+      <th>...</th>
+      <th>WeightClass</th>
+      <th>SLPM_x</th>
+      <th>SAPM_x</th>
+      <th>STRA_x</th>
+      <th>STRD_x</th>
+      <th>TD_x</th>
+      <th>TDA_x</th>
+      <th>TDD_x</th>
+      <th>SUBA_x</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>Shamil Abdurakhimov</td>
+      <td>Abrek</td>
+      <td>20</td>
+      <td>5</td>
+      <td>0</td>
+      <td>6' 3"</td>
+      <td>235 lbs.</td>
+      <td>76"</td>
+      <td>Orthodox</td>
+      <td>...</td>
+      <td>heavyweight</td>
+      <td>2.53</td>
+      <td>2.53</td>
+      <td>0.45</td>
+      <td>0.58</td>
+      <td>1.36</td>
+      <td>0.22</td>
+      <td>0.77</td>
+      <td>0.3</td>
+      <td>Active</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>Klidson Abreu</td>
+      <td>White Bear</td>
+      <td>15</td>
+      <td>4</td>
+      <td>0</td>
+      <td>6' 0"</td>
+      <td>235 lbs.</td>
+      <td>74"</td>
+      <td>Orthodox</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>2.05</td>
+      <td>0.40</td>
+      <td>2.90</td>
+      <td>0.55</td>
+      <td>0.64</td>
+      <td>0.20</td>
+      <td>0.80</td>
+      <td>0.0</td>
+      <td>Active</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>Israel Adesanya</td>
+      <td>The Last Stylebender</td>
+      <td>19</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6' 4"</td>
+      <td>185 lbs.</td>
+      <td>80"</td>
+      <td>Switch</td>
+      <td>...</td>
+      <td>middleweight</td>
+      <td>3.96</td>
+      <td>2.40</td>
+      <td>0.48</td>
+      <td>0.65</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.83</td>
+      <td>0.3</td>
+      <td>Active</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>Mariya Agapova</td>
+      <td>None</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>125 lbs.</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>3.84</td>
+      <td>0.51</td>
+      <td>4.35</td>
+      <td>0.51</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.42</td>
+      <td>0.8</td>
+      <td>Active</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>23</td>
+      <td>Omari Akhmedov</td>
+      <td>Wolverine</td>
+      <td>20</td>
+      <td>4</td>
+      <td>1</td>
+      <td>6' 0"</td>
+      <td>185 lbs.</td>
+      <td>73"</td>
+      <td>Orthodox</td>
+      <td>...</td>
+      <td>welterweight</td>
+      <td>2.94</td>
+      <td>2.65</td>
+      <td>0.34</td>
+      <td>0.57</td>
+      <td>3.41</td>
+      <td>0.54</td>
+      <td>0.50</td>
+      <td>0.4</td>
+      <td>Active</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 22 columns</p>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#getting all relevant columns</span>
+fdf <span style="color:#f92672">=</span> fdf[[<span style="color:#e6db74">&#39;Fighter Name&#39;</span>,<span style="color:#e6db74">&#39;W&#39;</span>,<span style="color:#e6db74">&#39;L&#39;</span>,<span style="color:#e6db74">&#39;D&#39;</span>,<span style="color:#e6db74">&#39;Height&#39;</span>,<span style="color:#e6db74">&#39;Weight&#39;</span>,<span style="color:#e6db74">&#39;Reach&#39;</span>,<span style="color:#e6db74">&#39;Stance&#39;</span>,<span style="color:#e6db74">&#39;Age&#39;</span>,<span style="color:#e6db74">&#39;SLPM_x&#39;</span>,<span style="color:#e6db74">&#39;SAPM_x&#39;</span>,<span style="color:#e6db74">&#39;STRA_x&#39;</span>,<span style="color:#e6db74">&#39;STRD_x&#39;</span>,<span style="color:#e6db74">&#39;TD_x&#39;</span>,<span style="color:#e6db74">&#39;TDA_x&#39;</span>,
+           <span style="color:#e6db74">&#39;TDD_x&#39;</span>,<span style="color:#e6db74">&#39;SUBA_x&#39;</span>]]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Handling Null Values</span>
+fdf<span style="color:#f92672">.</span>isnull()<span style="color:#f92672">.</span>sum()
+fdf <span style="color:#f92672">=</span> fdf<span style="color:#f92672">.</span>dropna(how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;any&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Getting feet and inches</span>
+fdf[[<span style="color:#e6db74">&#39;feet&#39;</span>,<span style="color:#e6db74">&#39;inches&#39;</span>]] <span style="color:#f92672">=</span> fdf[<span style="color:#e6db74">&#39;Height&#39;</span>]<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;&#39;&#34;</span>,expand<span style="color:#f92672">=</span>True)
+fdf[<span style="color:#e6db74">&#39;inches&#39;</span>]<span style="color:#f92672">=</span> fdf[<span style="color:#e6db74">&#39;inches&#39;</span>]<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;&#34;&#39;</span>,<span style="color:#e6db74">&#34;&#34;</span>)
+fdf[<span style="color:#e6db74">&#39;feet&#39;</span>]<span style="color:#f92672">=</span>pd<span style="color:#f92672">.</span>to_numeric(fdf<span style="color:#f92672">.</span>feet)
+fdf[<span style="color:#e6db74">&#39;inches&#39;</span>]<span style="color:#f92672">=</span>pd<span style="color:#f92672">.</span>to_numeric(fdf<span style="color:#f92672">.</span>inches)
+
+
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#getting height in centimetres</span>
+fdf[<span style="color:#e6db74">&#39;feet&#39;</span>] <span style="color:#f92672">=</span> fdf[<span style="color:#e6db74">&#39;feet&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">12</span>)
+fdf[<span style="color:#e6db74">&#39;Height&#39;</span>] <span style="color:#f92672">=</span> (fdf[<span style="color:#e6db74">&#39;feet&#39;</span>] <span style="color:#f92672">+</span> fdf[<span style="color:#e6db74">&#39;inches&#39;</span>]) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2.54</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># converting reach</span>
+fdf[<span style="color:#e6db74">&#39;Reach&#39;</span>]<span style="color:#f92672">=</span> fdf[<span style="color:#e6db74">&#39;Reach&#39;</span>]<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;\D+&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+fdf[<span style="color:#e6db74">&#39;Reach&#39;</span>]<span style="color:#f92672">=</span>pd<span style="color:#f92672">.</span>to_numeric(fdf<span style="color:#f92672">.</span>Reach)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Physique of a fighter</span>
+<span style="color:#75715e">#Striking on Head, Body and Legs</span>
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">8</span>))
+ax1 <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;W&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Height&#39;</span>,data<span style="color:#f92672">=</span>fdf, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Height&#39;</span>)
+ax2 <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;W&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Reach&#39;</span>,data<span style="color:#f92672">=</span>fdf,label<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Reach&#39;</span>)
+ax3 <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>scatterplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;W&#39;</span>,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Age&#39;</span>,data<span style="color:#f92672">=</span>fdf,label<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Age&#39;</span>)
+plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;Height and Reach&#34;</span>)
+plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;Wins&#34;</span>)
+</code></pre></div><pre><code>Text(0, 0.5, 'Wins')
+</code></pre>
+<p><img src="/images/projects/output_26_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#correlation Matrix</span>
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">8</span>))
+fdf_stats <span style="color:#f92672">=</span> fdf[[<span style="color:#e6db74">&#39;W&#39;</span>,<span style="color:#e6db74">&#39;L&#39;</span>,<span style="color:#e6db74">&#39;SLPM_x&#39;</span>,<span style="color:#e6db74">&#39;SAPM_x&#39;</span>,<span style="color:#e6db74">&#39;STRA_x&#39;</span>,<span style="color:#e6db74">&#39;STRD_x&#39;</span>,<span style="color:#e6db74">&#39;TD_x&#39;</span>,<span style="color:#e6db74">&#39;TDA_x&#39;</span>,<span style="color:#e6db74">&#39;TDD_x&#39;</span>,<span style="color:#e6db74">&#39;SUBA_x&#39;</span>]]
+sns<span style="color:#f92672">.</span>heatmap(fdf_stats<span style="color:#f92672">.</span>corr(), xticklabels<span style="color:#f92672">=</span>fdf_stats<span style="color:#f92672">.</span>corr()<span style="color:#f92672">.</span>columns, yticklabels<span style="color:#f92672">=</span>fdf_stats<span style="color:#f92672">.</span>corr()<span style="color:#f92672">.</span>columns, annot<span style="color:#f92672">=</span>True, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x257e3e65d08&gt;
+</code></pre>
+<p><img src="/images/projects/output_27_1.png" alt="png"></p>
+<h3> Conclusion </h3>
+<p>From the following Exploratory Data Analysis we gathered a few important insights about he UFC</p>
+<blockquote>
+<ol>
+<li>The Lightweight, Welterweight and Middleweight Division are the most active with most number of Fights. Lightweight Division has the most number of Championship Bouts. Most number of the fights were won by Decision or Submissions. Welterweight Division has the most number of Number of normal bouts. It also leads in the most number of KO&rsquo;s.<br></li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2">
+<li>Most of the UFC fight have been Finishes rather than Judges decisions. Out of the finishes almost 60% are Knockouts and 40% are submissions. A fighter is most likely to get finished(Knockout or submisison) in the first two rounds<br></li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="3">
+<li>The more strikes a fighter attemps the higher number of significant strikes he will land. There is no specificity in the location of the strikes or in which position the strike was landed. Submission are more complex to execute and hence statistically they are quite difficuly to map out.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="4">
+<li>Judges decision are more likely to happen if the fight goes more 3 rounds. Also these decision are highly arbitary with no pattern in relation with the statistics like significant strikes, takedowns, submission accuracy and Guard Passes.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="5">
+<li>Physicality is not the best factor while predicting wins, although having a good reach and height is beneficial.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="6">
+<li>The statistics measured during the bout or the fighter lack significant correlation with the result of the match. Hence dependant variables like wins or result are very hard to predict.</li>
+</ol>
+</blockquote>
+<h4 id="future-work">Future Work</h4>
+<p>It will be interesting to see if the aggregate statistics for each fighter, correaltes to the fighters records in the UFC.</p>
+
+        </div>
+
+        
+        
+          
+        
+
+        
+      <hr />
+        <div class="row next-prev-navigator">
+
+
+  
+
+  
+
+  
+
+  
+    
+      
+      <div class="col-md-6 previous-article">
+        <a href="/projects/tab/" class="btn btn-outline-info">
+          <span><i class="fas fa-chevron-circle-left"></i> Prev</span>
+          <br />
+          <span>Tableau Dashboards</span>
+        </a>
+      </div>
+      
+    
+    
+  
+
+</div>
+
+      <hr />
+      
+      
+          <div id="disqus_thread"></div>
+<script type="text/javascript">
+  (function () {
+    
+    
+    if (window.location.hostname == "localhost") return;
+
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    var disqus_shortname = "does-not-exist";
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+
+      
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section" id="toc-section">
+    
+    <div class="toc-holder">
+      <h5 class="text-center pl-3">Table of Contents</h5>
+      <hr>
+      <div class="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#datasets">Datasets</a></li>
+            <li><a href="#exploring-data-of-bouts">Exploring Data of Bouts</a></li>
+            <li><a href="#exploring-fighters-data">Exploring Fighters Data</a></li>
+            <li><a href="#future-work">Future Work</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+
+  
+
+
+
+
+  
+
+
+
+
+  
+  
+    
+  
+
+
+<footer class="container-fluid text-center align-content-center footer pb-2">
+  <div class="container pt-5">
+    <div class="row text-left">
+      <div class="col-md-4 col-sm-12">
+        <h5>Navigation</h5>
+        
+        <ul>
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#about">About</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#skills">Skills</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#projects">Projects</a>
+              </li>
+            
+        </ul>
+        
+
+      </div>
+      
+      <div class="col-md-4 col-sm-12">
+        <h5>Contact me:</h5>
+        <ul>
+          
+          <li><span>Email: </span> <span>phadke.amit03@gmail.com</span></li>
+          
+          <li><span>Phone: </span> <span>&#43;1 862-316-3994</span></li>
+          
+        </ul>
+      </div>
+      
+      
+    </div>
+  </div>
+  <hr />
+  <div class="container">
+    <div class="row text-left">
+       <div class="col-md-4">
+        
+        Template by Toha
+      </div>
+      <div class="col-md-4 text-center">© 2020 Copyright.</div>
+      <div class="col-md-4 text-right">
+        <a id="hugo" href="https://gohugo.io/">Powered by
+        <img
+          src="/assets/images/hugo-logo-wide.svg"
+          alt="Hugo Logo"
+          height="18"
+        />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/assets/js/jquery-3.4.1.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/main.js"></script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/assets/js/single.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </body>
+</html>

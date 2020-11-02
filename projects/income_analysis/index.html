@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Income analysis of adults in the USA</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/assets/css/layouts/main.css"/>
+<link rel="stylesheet" href="/assets/css/style.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/navbar.css"/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;500;600" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+
+
+<link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+
+
+<link rel="stylesheet" href="/assets/css/style.css"/>
+
+    
+<meta name="description" content="Income analysis of adults in the USA" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/assets/css/layouts/single.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/sidebar.css">
+
+
+    
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <a class="navbar-brand" href="/">
+      AMIT PHADKE</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+      
+      <li id="nav-item"><a href="http://example.org/#projects" data-filter="all" class="nav-link">All Projects</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <img src="/assets/images/main-logo.png" class="d-none" id="main-logo">
+  <img src="/assets/images/inverted-logo.png" class="d-none" id="inverted-logo">
+</nav>
+
+
+
+      
+      
+
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(http://example.org/images/projects/income.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        
+
+        <div class="title">
+          <h1>Income analysis of adults in the USA</h1>
+        </div>
+
+        <div class="post-content" id="post-content">
+          <h4 id="introduction">Introduction</h4>
+<p>The following jupyter notebook is an analysis into the Database for Adult Income in the United States. The Us Adult income dataset was extracted by Barry Becker from the 1994 US Census Database. The data set consists of anonymous information such as occupation, age, native country, race, capital gain, capital loss, education, work class and more. Each row is labelled as either having a salary greater than &ldquo;&gt;50K&rdquo; or &ldquo;&lt;=50K&rdquo;. The main tasks here would be cleaning the data, Exploring it and building the appropriate model to predict the salary.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#import libraries</span>
+<span style="color:#f92672">import</span> itertools
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> LabelEncoder
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> OneHotEncoder
+<span style="color:#f92672">from</span> sklearn.ensemble <span style="color:#f92672">import</span> RandomForestClassifier
+<span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> classification_report, confusion_matrix, accuracy_score
+<span style="color:#f92672">from</span> sklearn.linear_model <span style="color:#f92672">import</span> LogisticRegression
+<span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
+<span style="color:#f92672">import</span> warnings
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#34;adult.csv&#34;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df<span style="color:#f92672">.</span>shape
+</code></pre></div><pre><code>(32561, 15)
+</code></pre>
+<h4 id="1-data-cleaning">1. Data Cleaning</h4>
+<p>For the data cleaning task we will look at each column and do some catagorical changes and eliminate any unwanted rows that will help us ease the process of building a model.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#parsing gender</span>
+df[<span style="color:#e6db74">&#39;sex&#39;</span>]<span style="color:#f92672">.</span>replace([<span style="color:#e6db74">&#39;Male&#39;</span>,<span style="color:#e6db74">&#39;Female&#39;</span>],[<span style="color:#e6db74">&#39;1&#39;</span>,<span style="color:#e6db74">&#39;0&#39;</span>], inplace<span style="color:#f92672">=</span>True)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#parsing education</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">education</span>(x):
+    <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Bachelors&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Some-college&#39;</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Bachelors&#39;</span>
+    <span style="color:#66d9ef">elif</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Assoc-voc&#39;</span> <span style="color:#f92672">or</span> x<span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Assoc-acdm&#39;</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Associate&#39;</span>
+    <span style="color:#66d9ef">elif</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;1st-4th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;1st-4th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;5th-6th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;7th-8th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;9th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;10th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;11th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;12th&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;HS-grad&#39;</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;High School&#39;</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> x
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df[<span style="color:#e6db74">&#39;education&#39;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;education&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: education(x))
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#parsing marital status</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">status</span>(x):
+    <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Divorced&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Widowed&#39;</span> <span style="color:#f92672">or</span> x<span style="color:#f92672">==</span><span style="color:#e6db74">&#39;Never-married&#39;</span> <span style="color:#f92672">or</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Separated&#39;</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;1&#39;</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;0&#39;</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df[<span style="color:#e6db74">&#39;status&#39;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;marital.status&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: status(x))
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#handling null values</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> df<span style="color:#f92672">.</span>columns:
+    df[i]<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;?&#39;</span>, np<span style="color:#f92672">.</span>nan, inplace<span style="color:#f92672">=</span>True)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(df<span style="color:#f92672">.</span>isnull()<span style="color:#f92672">.</span>sum())
+</code></pre></div><pre><code>age                  0
+workclass         1836
+fnlwgt               0
+education            0
+education.num        0
+marital.status       0
+occupation        1843
+relationship         0
+race                 0
+sex                  0
+capital.gain         0
+capital.loss         0
+hours.per.week       0
+native.country     583
+income               0
+status               0
+dtype: int64
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">x <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>shape
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Shape: {}&#39;</span><span style="color:#f92672">.</span>format(x))
+</code></pre></div><pre><code>Shape: (32561, 16)
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>dropna(subset<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;workclass&#39;</span>,<span style="color:#e6db74">&#39;occupation&#39;</span>,<span style="color:#e6db74">&#39;native.country&#39;</span>], how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;all&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">y <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>shape
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Rows Dropped: {}&#34;</span><span style="color:#f92672">.</span>format(x[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">-</span> y[<span style="color:#ae81ff">0</span>]))
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Shape: {}&#34;</span><span style="color:#f92672">.</span>format(y))
+</code></pre></div><pre><code>Rows Dropped: 27
+Shape: (32534, 16)
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df<span style="color:#f92672">.</span>head()
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>workclass</th>
+      <th>fnlwgt</th>
+      <th>education</th>
+      <th>education.num</th>
+      <th>marital.status</th>
+      <th>occupation</th>
+      <th>relationship</th>
+      <th>race</th>
+      <th>sex</th>
+      <th>capital.gain</th>
+      <th>capital.loss</th>
+      <th>hours.per.week</th>
+      <th>native.country</th>
+      <th>income</th>
+      <th>status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>90</td>
+      <td>NaN</td>
+      <td>77053</td>
+      <td>High School</td>
+      <td>9</td>
+      <td>Widowed</td>
+      <td>NaN</td>
+      <td>Not-in-family</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>82</td>
+      <td>Private</td>
+      <td>132870</td>
+      <td>High School</td>
+      <td>9</td>
+      <td>Widowed</td>
+      <td>Exec-managerial</td>
+      <td>Not-in-family</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>18</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>66</td>
+      <td>NaN</td>
+      <td>186061</td>
+      <td>Bachelors</td>
+      <td>10</td>
+      <td>Widowed</td>
+      <td>NaN</td>
+      <td>Unmarried</td>
+      <td>Black</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>54</td>
+      <td>Private</td>
+      <td>140359</td>
+      <td>High School</td>
+      <td>4</td>
+      <td>Divorced</td>
+      <td>Machine-op-inspct</td>
+      <td>Unmarried</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>41</td>
+      <td>Private</td>
+      <td>264663</td>
+      <td>Bachelors</td>
+      <td>10</td>
+      <td>Separated</td>
+      <td>Prof-specialty</td>
+      <td>Own-child</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<h4 id="2-exploratory-data-analysis">2. Exploratory Data Analysis</h4>
+<p>Doing some exploratory data analysis on the data will allow us to look at the independant variables with respect to our dependant variables. We can select the variables that will help us fit the best model for our data.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df<span style="color:#f92672">.</span>head()
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>workclass</th>
+      <th>fnlwgt</th>
+      <th>education</th>
+      <th>education.num</th>
+      <th>marital.status</th>
+      <th>occupation</th>
+      <th>relationship</th>
+      <th>race</th>
+      <th>sex</th>
+      <th>capital.gain</th>
+      <th>capital.loss</th>
+      <th>hours.per.week</th>
+      <th>native.country</th>
+      <th>income</th>
+      <th>status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>90</td>
+      <td>NaN</td>
+      <td>77053</td>
+      <td>High School</td>
+      <td>9</td>
+      <td>Widowed</td>
+      <td>NaN</td>
+      <td>Not-in-family</td>
+      <td>White</td>
+      <td>F</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>Single</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>82</td>
+      <td>Private</td>
+      <td>132870</td>
+      <td>High School</td>
+      <td>9</td>
+      <td>Widowed</td>
+      <td>Exec-managerial</td>
+      <td>Not-in-family</td>
+      <td>White</td>
+      <td>F</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>18</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>Single</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>66</td>
+      <td>NaN</td>
+      <td>186061</td>
+      <td>Bachelors</td>
+      <td>10</td>
+      <td>Widowed</td>
+      <td>NaN</td>
+      <td>Unmarried</td>
+      <td>Black</td>
+      <td>F</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>Single</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>54</td>
+      <td>Private</td>
+      <td>140359</td>
+      <td>High School</td>
+      <td>4</td>
+      <td>Divorced</td>
+      <td>Machine-op-inspct</td>
+      <td>Unmarried</td>
+      <td>White</td>
+      <td>F</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>Single</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>41</td>
+      <td>Private</td>
+      <td>264663</td>
+      <td>Bachelors</td>
+      <td>10</td>
+      <td>Separated</td>
+      <td>Prof-specialty</td>
+      <td>Own-child</td>
+      <td>White</td>
+      <td>F</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>United-States</td>
+      <td>&lt;=50K</td>
+      <td>Single</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sns<span style="color:#f92672">.</span>pairplot(df)
+</code></pre></div><pre><code>&lt;seaborn.axisgrid.PairGrid at 0x1e09b753ec8&gt;
+</code></pre>
+<p><img src="/images/projects/uad_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">10</span>))
+sns<span style="color:#f92672">.</span>boxplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;age&#34;</span>, data<span style="color:#f92672">=</span>df)
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;Income vs Age&#34;</span>)
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/images/projects/uad_2.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">10</span>))
+ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>countplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;workclass&#34;</span>, hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>, data<span style="color:#f92672">=</span>df)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;workclass vs count&#34;</span>)
+</code></pre></div><p><img src="/images/projects/uad_3.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">fig, (ax1, ax2) <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">16</span>))
+sns<span style="color:#f92672">.</span>countplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;education&#34;</span>, hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>,data<span style="color:#f92672">=</span>df, ax <span style="color:#f92672">=</span> ax1)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Income vs Education&#34;</span>);
+sns<span style="color:#f92672">.</span>countplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;relationship&#34;</span>, hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>,data<span style="color:#f92672">=</span>df, ax <span style="color:#f92672">=</span> ax2)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Income vs Relationship&#34;</span>);
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/images/projects/uad_4.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">fig, (ax1, ax2) <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>,<span style="color:#ae81ff">16</span>))
+sns<span style="color:#f92672">.</span>countplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;marital.status&#34;</span>, hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>,data<span style="color:#f92672">=</span>df, ax <span style="color:#f92672">=</span> ax1)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Income vs marital.status&#34;</span>);
+sns<span style="color:#f92672">.</span>countplot(y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;status&#34;</span>, hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>,data<span style="color:#f92672">=</span>df, ax <span style="color:#f92672">=</span> ax2)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Income vs status&#34;</span>);
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/images/projects/uad_5.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sns<span style="color:#f92672">.</span>catplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex&#34;</span>, hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;income&#34;</span>, kind<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;count&#34;</span>,data<span style="color:#f92672">=</span>df)
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;Income vs Sex&#34;</span>);
+</code></pre></div><p><img src="/images/projects/uad_6.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sns<span style="color:#f92672">.</span>countplot(hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;income&#39;</span>,y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;race&#39;</span>,data<span style="color:#f92672">=</span>df)
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;Income vs Hours per Week&#34;</span>)
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Income vs Hours per Week')
+</code></pre>
+<p><img src="/images/projects/uad_7.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sns<span style="color:#f92672">.</span>catplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;income&#39;</span>,y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;hours.per.week&#39;</span>,data<span style="color:#f92672">=</span>df)
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;Income vs Hours per Week&#34;</span>)
+</code></pre></div><pre><code>Text(0.5, 1, 'Income vs Hours per Week')
+</code></pre>
+<p><img src="/images/projects/uad_8.png" alt="png"></p>
+<h4 id="3-model-building">3. Model Building</h4>
+<p>From the EDA we can see that certain variables affect income catagory, hence we will using those variables. Our dependant variable(y) which is income is split in two catagories. Hence our best bet would be to use logistic regression and random forests for classification and prediction.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">uad_df <span style="color:#f92672">=</span> df
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">uad_df <span style="color:#f92672">=</span> uad_df<span style="color:#f92672">.</span>drop([<span style="color:#e6db74">&#39;fnlwgt&#39;</span>,<span style="color:#e6db74">&#39;native.country&#39;</span>,<span style="color:#e6db74">&#39;relationship&#39;</span>,<span style="color:#e6db74">&#39;marital.status&#39;</span>,<span style="color:#e6db74">&#39;education&#39;</span>], axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+uad_df <span style="color:#f92672">=</span> uad_df<span style="color:#f92672">.</span>dropna()
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">uad_df
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>workclass</th>
+      <th>education.num</th>
+      <th>occupation</th>
+      <th>race</th>
+      <th>sex</th>
+      <th>capital.gain</th>
+      <th>capital.loss</th>
+      <th>hours.per.week</th>
+      <th>income</th>
+      <th>status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>82</td>
+      <td>Private</td>
+      <td>9</td>
+      <td>Exec-managerial</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>18</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>54</td>
+      <td>Private</td>
+      <td>4</td>
+      <td>Machine-op-inspct</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>41</td>
+      <td>Private</td>
+      <td>10</td>
+      <td>Prof-specialty</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>34</td>
+      <td>Private</td>
+      <td>9</td>
+      <td>Other-service</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3770</td>
+      <td>45</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>38</td>
+      <td>Private</td>
+      <td>6</td>
+      <td>Adm-clerical</td>
+      <td>White</td>
+      <td>1</td>
+      <td>0</td>
+      <td>3770</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>32556</th>
+      <td>22</td>
+      <td>Private</td>
+      <td>10</td>
+      <td>Protective-serv</td>
+      <td>White</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>32557</th>
+      <td>27</td>
+      <td>Private</td>
+      <td>12</td>
+      <td>Tech-support</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>38</td>
+      <td>&lt;=50K</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>32558</th>
+      <td>40</td>
+      <td>Private</td>
+      <td>9</td>
+      <td>Machine-op-inspct</td>
+      <td>White</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>&gt;50K</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>32559</th>
+      <td>58</td>
+      <td>Private</td>
+      <td>9</td>
+      <td>Adm-clerical</td>
+      <td>White</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>32560</th>
+      <td>22</td>
+      <td>Private</td>
+      <td>9</td>
+      <td>Adm-clerical</td>
+      <td>White</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>20</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>30718 rows × 11 columns</p>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rf_df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>get_dummies(uad_df, columns<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;workclass&#34;</span>,<span style="color:#e6db74">&#39;occupation&#39;</span>,<span style="color:#e6db74">&#39;race&#39;</span>],   <span style="color:#75715e">#&#34;native.country&#34;,&#34;race&#34;,&#34;relationship,&#34;education&#34;,&#39;marital.status&#39;</span>
+                         prefix<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;is_workclass&#34;</span>,<span style="color:#e6db74">&#34;is_occupation&#34;</span>,<span style="color:#e6db74">&#34;is_race&#34;</span>]) <span style="color:#75715e">#&#34;is_race&#34;,&#34;is_native.country&#34;,&#34;is_relationship&#34;,&#34;is_education&#34;,&#39;is_marital.status&#39;</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rf_df
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>education.num</th>
+      <th>sex</th>
+      <th>capital.gain</th>
+      <th>capital.loss</th>
+      <th>hours.per.week</th>
+      <th>income</th>
+      <th>status</th>
+      <th>is_workclass_Federal-gov</th>
+      <th>is_workclass_Local-gov</th>
+      <th>...</th>
+      <th>is_occupation_Prof-specialty</th>
+      <th>is_occupation_Protective-serv</th>
+      <th>is_occupation_Sales</th>
+      <th>is_occupation_Tech-support</th>
+      <th>is_occupation_Transport-moving</th>
+      <th>is_race_Amer-Indian-Eskimo</th>
+      <th>is_race_Asian-Pac-Islander</th>
+      <th>is_race_Black</th>
+      <th>is_race_Other</th>
+      <th>is_race_White</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>82</td>
+      <td>9</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4356</td>
+      <td>18</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>54</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>41</td>
+      <td>10</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3900</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>34</td>
+      <td>9</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3770</td>
+      <td>45</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>38</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>3770</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>32556</th>
+      <td>22</td>
+      <td>10</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>32557</th>
+      <td>27</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>38</td>
+      <td>&lt;=50K</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>32558</th>
+      <td>40</td>
+      <td>9</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>&gt;50K</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>32559</th>
+      <td>58</td>
+      <td>9</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>32560</th>
+      <td>22</td>
+      <td>9</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>20</td>
+      <td>&lt;=50K</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>30718 rows × 34 columns</p>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">y <span style="color:#f92672">=</span> rf_df[<span style="color:#e6db74">&#39;income&#39;</span>]
+x <span style="color:#f92672">=</span> rf_df<span style="color:#f92672">.</span>drop([<span style="color:#e6db74">&#39;income&#39;</span>], axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">train_x, test_x, train_y, test_y <span style="color:#f92672">=</span> train_test_split(x, y, test_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.20</span>, random_state <span style="color:#f92672">=</span> <span style="color:#ae81ff">42</span>)
+</code></pre></div><p><b>Random Forest Classifier</b></p>
+<p>The first algorithm we will test is the random forrest classifier. We will check its performance using metric like accuracy, confusion matrix, precision and recall.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">randomforest <span style="color:#f92672">=</span> RandomForestClassifier()
+fit<span style="color:#f92672">=</span>randomforest<span style="color:#f92672">.</span>fit(train_x,train_y)
+y_pred <span style="color:#f92672">=</span> fit<span style="color:#f92672">.</span>predict(test_x)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot_confusion_matrix</span>(cm, classes, normalize<span style="color:#f92672">=</span>False):
+    <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">    This function prints and plots the confusion matrix.
+</span><span style="color:#e6db74">    Normalization can be applied by setting `normalize=True`.
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    cmap <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>cm<span style="color:#f92672">.</span>Blues
+    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Confusion Matrix&#34;</span>
+    <span style="color:#66d9ef">if</span> normalize:
+        cm <span style="color:#f92672">=</span> cm<span style="color:#f92672">.</span>astype(<span style="color:#e6db74">&#39;float&#39;</span>) <span style="color:#f92672">/</span> cm<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)[:, np<span style="color:#f92672">.</span>newaxis]
+        cm <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>around(cm, decimals<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+
+    plt<span style="color:#f92672">.</span>imshow(cm, interpolation<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;nearest&#39;</span>, cmap<span style="color:#f92672">=</span>cmap)
+    plt<span style="color:#f92672">.</span>title(title)
+    plt<span style="color:#f92672">.</span>colorbar()
+    tick_marks <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>arange(len(classes))
+    plt<span style="color:#f92672">.</span>xticks(tick_marks, classes, rotation<span style="color:#f92672">=</span><span style="color:#ae81ff">45</span>)
+    plt<span style="color:#f92672">.</span>yticks(tick_marks, classes)
+
+    thresh <span style="color:#f92672">=</span> cm<span style="color:#f92672">.</span>max() <span style="color:#f92672">/</span> <span style="color:#ae81ff">2.</span>
+    <span style="color:#66d9ef">for</span> i, j <span style="color:#f92672">in</span> itertools<span style="color:#f92672">.</span>product(range(cm<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]), range(cm<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>])):
+        plt<span style="color:#f92672">.</span>text(j, i, cm[i, j],
+                 horizontalalignment<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;center&#34;</span>,
+                 color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;white&#34;</span> <span style="color:#66d9ef">if</span> cm[i, j] <span style="color:#f92672">&gt;</span> thresh <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;black&#34;</span>)
+
+    plt<span style="color:#f92672">.</span>tight_layout()
+    plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#39;True label&#39;</span>)
+    plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#39;Predicted label&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">cfm <span style="color:#f92672">=</span> confusion_matrix(test_y,y_pred)
+plot_confusion_matrix(cfm,classes<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;&lt;=50K&#34;</span>, <span style="color:#e6db74">&#34;&gt;50K&#34;</span>], normalize<span style="color:#f92672">=</span>True)
+</code></pre></div><p><img src="/images/projects/uad_9.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Accuracy:&#34;</span>,metrics<span style="color:#f92672">.</span>accuracy_score(test_y, y_pred))
+</code></pre></div><pre><code>Accuracy: 0.841796875
+</code></pre>
+<p><b>Logistic Regression</b></p>
+<p>The second algorithm we will test is logisitc regression to predict our dependent variable. We will check its performance using metrics like rmse and r2 values.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">logreg <span style="color:#f92672">=</span> LogisticRegression()
+fit2 <span style="color:#f92672">=</span> logreg<span style="color:#f92672">.</span>fit(train_x,train_y)
+y_pred2<span style="color:#f92672">=</span>fit2<span style="color:#f92672">.</span>predict(test_x)
+warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#39;ignore&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">cfm <span style="color:#f92672">=</span> confusion_matrix(test_y,y_pred2)
+plot_confusion_matrix(cfm,classes<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;&lt;=50K&#34;</span>, <span style="color:#e6db74">&#34;&gt;50K&#34;</span>], normalize<span style="color:#f92672">=</span>True)
+</code></pre></div><p><img src="/images/projects/uad_10.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(classification_report(test_y,y_pred2))
+</code></pre></div><pre><code>              precision    recall  f1-score   support
+
+       &lt;=50K       0.87      0.92      0.90      4639
+        &gt;50K       0.71      0.58      0.64      1505
+
+    accuracy                           0.84      6144
+   macro avg       0.79      0.75      0.77      6144
+weighted avg       0.83      0.84      0.83      6144
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Accuracy:&#34;</span>, accuracy_score(test_y, y_pred2))
+</code></pre></div><pre><code>Accuracy: 0.8385416666666666
+</code></pre>
+
+        </div>
+
+        
+        
+          
+        
+
+        
+      <hr />
+        <div class="row next-prev-navigator">
+
+
+  
+
+  
+    
+      
+      <div class="col-md-6 previous-article">
+        <a href="/projects/beer_reviews/" class="btn btn-outline-info">
+          <span><i class="fas fa-chevron-circle-left"></i> Prev</span>
+          <br />
+          <span>Beer Quality Prediction</span>
+        </a>
+      </div>
+      
+    
+    
+      
+        
+        
+          
+              
+          
+        
+        <div class="col-md-6 next-article">
+          <a href="/projects/tab/" class="btn btn-outline-info">
+            <span>Next <i class="fas fa-chevron-circle-right"></i></span>
+            <br />
+            <span>Tableau Dashboards</span>
+          </a>
+        </div>
+      
+    
+  
+
+  
+
+  
+
+</div>
+
+      <hr />
+      
+      
+          <div id="disqus_thread"></div>
+<script type="text/javascript">
+  (function () {
+    
+    
+    if (window.location.hostname == "localhost") return;
+
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    var disqus_shortname = "does-not-exist";
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+
+      
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section" id="toc-section">
+    
+    <div class="toc-holder">
+      <h5 class="text-center pl-3">Table of Contents</h5>
+      <hr>
+      <div class="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#1-data-cleaning">1. Data Cleaning</a></li>
+            <li><a href="#2-exploratory-data-analysis">2. Exploratory Data Analysis</a></li>
+            <li><a href="#3-model-building">3. Model Building</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+
+  
+
+
+
+
+  
+
+
+
+
+  
+  
+    
+  
+
+
+<footer class="container-fluid text-center align-content-center footer pb-2">
+  <div class="container pt-5">
+    <div class="row text-left">
+      <div class="col-md-4 col-sm-12">
+        <h5>Navigation</h5>
+        
+        <ul>
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#about">About</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#skills">Skills</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#projects">Projects</a>
+              </li>
+            
+        </ul>
+        
+
+      </div>
+      
+      <div class="col-md-4 col-sm-12">
+        <h5>Contact me:</h5>
+        <ul>
+          
+          <li><span>Email: </span> <span>phadke.amit03@gmail.com</span></li>
+          
+          <li><span>Phone: </span> <span>&#43;1 862-316-3994</span></li>
+          
+        </ul>
+      </div>
+      
+      
+    </div>
+  </div>
+  <hr />
+  <div class="container">
+    <div class="row text-left">
+       <div class="col-md-4">
+        
+        Template by Toha
+      </div>
+      <div class="col-md-4 text-center">© 2020 Copyright.</div>
+      <div class="col-md-4 text-right">
+        <a id="hugo" href="https://gohugo.io/">Powered by
+        <img
+          src="/assets/images/hugo-logo-wide.svg"
+          alt="Hugo Logo"
+          height="18"
+        />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/assets/js/jquery-3.4.1.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/main.js"></script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/assets/js/single.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </body>
+</html>

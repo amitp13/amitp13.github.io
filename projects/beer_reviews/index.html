@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Beer Quality Prediction</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/assets/css/layouts/main.css"/>
+<link rel="stylesheet" href="/assets/css/style.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/navbar.css"/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;500;600" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+
+
+<link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+
+
+<link rel="stylesheet" href="/assets/css/style.css"/>
+
+    
+<meta name="description" content="Beer Quality Prediction" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/assets/css/layouts/single.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/sidebar.css">
+
+
+    
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <a class="navbar-brand" href="/">
+      AMIT PHADKE</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+      
+      <li id="nav-item"><a href="http://example.org/#projects" data-filter="all" class="nav-link">All Projects</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <img src="/assets/images/main-logo.png" class="d-none" id="main-logo">
+  <img src="/assets/images/inverted-logo.png" class="d-none" id="inverted-logo">
+</nav>
+
+
+
+      
+      
+
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(http://example.org/images/projects/beer.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        
+
+        <div class="title">
+          <h1>Beer Quality Prediction</h1>
+        </div>
+
+        <div class="post-content" id="post-content">
+          <h4 id="introduction">Introduction</h4>
+<p>The following jupyter notebook is an analysis of more 50,000 beers across the world and how users have reviewed them based on aroma, taste, appearance, palate, etc. We will first look at the different subtypes of ratings and how much correlation do they have to the overall rating and which are the strongest indicators of high rated beer. Secondly we will look at the relation between ABV(alcohol level by volume) and ratings. The notebook is split in three phases namely Data Cleaning, Exploratory Data Analysis and Modelling.</p>
+<h4 id="1-data-preparation">1. Data Preparation</h4>
+<p>All our data is placed in the database beer.db. With help sqlite3 we will extract only the data we require through SQL queries. The data we will use for our prediction will be average values for aroma, palate, appearance and so on for each beer.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns
+<span style="color:#f92672">import</span> sqlite3
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split
+<span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> linear_model
+<span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> mean_squared_error
+<span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> r2_score
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Code for getting dataframes from various queries fired on the database</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">query_result_df</span>(q):
+    conn <span style="color:#f92672">=</span> sqlite3<span style="color:#f92672">.</span>connect(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;C:\Users\phadk\Desktop\Work\projects\beer.db&#39;</span>)
+    con <span style="color:#f92672">=</span> conn<span style="color:#f92672">.</span>cursor()
+    query <span style="color:#f92672">=</span> con<span style="color:#f92672">.</span>execute(q)
+    cols <span style="color:#f92672">=</span> [column[<span style="color:#ae81ff">0</span>] <span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> query<span style="color:#f92672">.</span>description]
+    result_df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_records(data <span style="color:#f92672">=</span> query<span style="color:#f92672">.</span>fetchall(), columns <span style="color:#f92672">=</span> cols)
+    <span style="color:#66d9ef">return</span> result_df
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#getting a dataframe with all results from beer_master table</span>
+data <span style="color:#f92672">=</span> query_result_df(<span style="color:#e6db74">&#39;&#39;&#39;SELECT beer_beerid, beer_name, brewery_id, brewery_name, beer_style, beer_abv, ROUND(AVG(review_appearance),2) AS avg_review_appearance,
+</span><span style="color:#e6db74">ROUND(AVG(review_aroma),2) AS avg_review_aroma, ROUND(AVG(review_palate),2) AS avg_review_palate,
+</span><span style="color:#e6db74">ROUND(AVG(review_taste),2) AS avg_review_taste, ROUND(AVG(review_overall),2) AS avg_review_overall
+</span><span style="color:#e6db74">FROM beer_reviews
+</span><span style="color:#e6db74">GROUP BY beer_beerid&#39;&#39;&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data<span style="color:#f92672">.</span>head()
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>beer_beerid</th>
+      <th>beer_name</th>
+      <th>brewery_id</th>
+      <th>brewery_name</th>
+      <th>beer_style</th>
+      <th>beer_abv</th>
+      <th>avg_review_appearance</th>
+      <th>avg_review_aroma</th>
+      <th>avg_review_palate</th>
+      <th>avg_review_taste</th>
+      <th>avg_review_overall</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3</td>
+      <td>Cactus Queen IPA</td>
+      <td>2</td>
+      <td>Yellow Rose Brewing Company</td>
+      <td>American IPA</td>
+      <td>NaN</td>
+      <td>3.83</td>
+      <td>4.00</td>
+      <td>4.17</td>
+      <td>4.17</td>
+      <td>4.17</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4</td>
+      <td>Wildcatter's Crude Stout</td>
+      <td>2</td>
+      <td>Yellow Rose Brewing Company</td>
+      <td>American Stout</td>
+      <td>NaN</td>
+      <td>3.95</td>
+      <td>3.80</td>
+      <td>3.70</td>
+      <td>3.45</td>
+      <td>3.70</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>5</td>
+      <td>Amber</td>
+      <td>3</td>
+      <td>Abita Brewing Co.</td>
+      <td>Vienna Lager</td>
+      <td>4.5</td>
+      <td>3.49</td>
+      <td>3.21</td>
+      <td>3.32</td>
+      <td>3.34</td>
+      <td>3.55</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>6</td>
+      <td>Turbodog</td>
+      <td>3</td>
+      <td>Abita Brewing Co.</td>
+      <td>English Brown Ale</td>
+      <td>5.6</td>
+      <td>3.84</td>
+      <td>3.52</td>
+      <td>3.51</td>
+      <td>3.65</td>
+      <td>3.71</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>7</td>
+      <td>Purple Haze</td>
+      <td>3</td>
+      <td>Abita Brewing Co.</td>
+      <td>Fruit / Vegetable Beer</td>
+      <td>4.2</td>
+      <td>3.25</td>
+      <td>3.18</td>
+      <td>3.11</td>
+      <td>3.10</td>
+      <td>3.27</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<h4 id="1-data-cleaning">1. Data Cleaning</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data<span style="color:#f92672">.</span>describe()
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>beer_beerid</th>
+      <th>brewery_id</th>
+      <th>beer_abv</th>
+      <th>avg_review_appearance</th>
+      <th>avg_review_aroma</th>
+      <th>avg_review_palate</th>
+      <th>avg_review_taste</th>
+      <th>avg_review_overall</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>66055.000000</td>
+      <td>66055.000000</td>
+      <td>49012.000000</td>
+      <td>66055.000000</td>
+      <td>66055.000000</td>
+      <td>66055.000000</td>
+      <td>66055.000000</td>
+      <td>66055.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>39718.135084</td>
+      <td>6855.265294</td>
+      <td>6.271890</td>
+      <td>3.686760</td>
+      <td>3.553423</td>
+      <td>3.575470</td>
+      <td>3.600068</td>
+      <td>3.656606</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>22416.177772</td>
+      <td>7482.954279</td>
+      <td>2.050938</td>
+      <td>0.507154</td>
+      <td>0.588795</td>
+      <td>0.579625</td>
+      <td>0.629013</td>
+      <td>0.621716</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>3.000000</td>
+      <td>1.000000</td>
+      <td>0.010000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>20503.500000</td>
+      <td>879.000000</td>
+      <td>5.000000</td>
+      <td>3.500000</td>
+      <td>3.250000</td>
+      <td>3.250000</td>
+      <td>3.310000</td>
+      <td>3.420000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>40506.000000</td>
+      <td>3073.000000</td>
+      <td>5.700000</td>
+      <td>3.750000</td>
+      <td>3.580000</td>
+      <td>3.670000</td>
+      <td>3.690000</td>
+      <td>3.750000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>59206.500000</td>
+      <td>11814.000000</td>
+      <td>7.200000</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>77317.000000</td>
+      <td>28003.000000</td>
+      <td>57.700000</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>Here We see that reviews are given between a value of 1 to 5. The value of beer ABV(Alcohol By Volume) level is continuous value upto 57.7.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data<span style="color:#f92672">.</span>isna()<span style="color:#f92672">.</span>sum()
+</code></pre></div><pre><code>beer_beerid                  0
+beer_name                    0
+brewery_id                   0
+brewery_name                11
+beer_style                   0
+beer_abv                 17043
+avg_review_appearance        0
+avg_review_aroma             0
+avg_review_palate            0
+avg_review_taste             0
+avg_review_overall           0
+dtype: int64
+</code></pre>
+<p>We see that beer_abv column has 17043 missing values. Here we can use a few strategies to fill out these values. We can analyze if certain beer styles in our dataset have a particular abv range and then fill the abv values as per our analysis.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#query to get average abv values from the style of a certain beer</span>
+data_abv <span style="color:#f92672">=</span> query_result_df(<span style="color:#e6db74">&#39;&#39;&#39;SELECT beer_style,min(beer_abv)+ max(beer_abv)/2 AS avg_abv
+</span><span style="color:#e6db74">FROM (SELECT beer_beerid, beer_name, brewery_id, brewery_name, beer_style, beer_abv, ROUND(AVG(review_appearance),2) AS avg_review_appearance,
+</span><span style="color:#e6db74">ROUND(AVG(review_aroma),2) AS avg_review_aroma, ROUND(AVG(review_palate),2) AS avg_review_palate,
+</span><span style="color:#e6db74">ROUND(AVG(review_taste),2) AS avg_review_taste, ROUND(AVG(review_overall),2) AS avg_review_overall
+</span><span style="color:#e6db74">FROM beer_reviews
+</span><span style="color:#e6db74">GROUP BY beer_beerid)
+</span><span style="color:#e6db74">GROUP BY beer_style&#39;&#39;&#39;</span>)
+
+data <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>merge(data_abv,how<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;left&#34;</span>,on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;beer_style&#39;</span>)
+data[<span style="color:#e6db74">&#39;beer_abv&#39;</span>] <span style="color:#f92672">=</span> data[<span style="color:#e6db74">&#39;beer_abv&#39;</span>]<span style="color:#f92672">.</span>fillna(value<span style="color:#f92672">=</span>data[<span style="color:#e6db74">&#39;avg_abv&#39;</span>])
+
+data<span style="color:#f92672">.</span>drop([<span style="color:#e6db74">&#39;avg_abv&#39;</span>], axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, inplace<span style="color:#f92672">=</span>True)
+</code></pre></div><h4 id="2-exploratory-data-analysis">2. Exploratory Data Analysis</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">viz_abv <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>sort_values(<span style="color:#e6db74">&#39;beer_abv&#39;</span>)<span style="color:#f92672">.</span>tail(<span style="color:#ae81ff">5</span>)
+sns<span style="color:#f92672">.</span>barplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;beer_abv&#34;</span>,y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;beer_name&#34;</span>,  
+            palette<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blues_d&#34;</span>,
+            order<span style="color:#f92672">=</span>viz_abv<span style="color:#f92672">.</span>sort_values(<span style="color:#e6db74">&#39;beer_abv&#39;</span>,ascending<span style="color:#f92672">=</span>False)<span style="color:#f92672">.</span>beer_name,
+            label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Beers with Highest ABV&#34;</span>,
+            data<span style="color:#f92672">=</span>viz_abv)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x2024cb72088&gt;
+</code></pre>
+<p><img src="beer.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">viz_abv <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>sort_values(<span style="color:#e6db74">&#39;avg_review_taste&#39;</span>)<span style="color:#f92672">.</span>tail(<span style="color:#ae81ff">10</span>)
+viz_abv[[<span style="color:#e6db74">&#39;beer_name&#39;</span>,<span style="color:#e6db74">&#39;brewery_name&#39;</span>,<span style="color:#e6db74">&#39;beer_style&#39;</span>,<span style="color:#e6db74">&#39;beer_abv&#39;</span>]]
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>beer_name</th>
+      <th>brewery_name</th>
+      <th>beer_style</th>
+      <th>beer_abv</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>53491</th>
+      <td>Biere Blonde</td>
+      <td>Ninkasi Fabriques</td>
+      <td>American Blonde Ale</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <th>48640</th>
+      <td>Diamond Knot IPA (Dry Hopped With Simcoe)</td>
+      <td>Diamond Knot Brewery</td>
+      <td>American IPA</td>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>53499</th>
+      <td>Chocolate Orange Delight</td>
+      <td>Downton Brewery Company</td>
+      <td>Milk / Sweet Stout</td>
+      <td>5.8</td>
+    </tr>
+    <tr>
+      <th>6553</th>
+      <td>Christmas Stark Lager</td>
+      <td>Red Oak Brewery</td>
+      <td>Märzen / Oktoberfest</td>
+      <td>5.7</td>
+    </tr>
+    <tr>
+      <th>33583</th>
+      <td>Caves Right Pilsner</td>
+      <td>Ram Restaurant &amp; Brewery</td>
+      <td>Czech Pilsener</td>
+      <td>4.8</td>
+    </tr>
+    <tr>
+      <th>28745</th>
+      <td>Wiltse's Blue Ox Stout</td>
+      <td>Wiltse's Brew Pub and Family Restaurant</td>
+      <td>American Stout</td>
+      <td>8.5</td>
+    </tr>
+    <tr>
+      <th>50829</th>
+      <td>Addlepated Ale</td>
+      <td>Titletown Brewing Company</td>
+      <td>American Amber / Red Ale</td>
+      <td>6.5</td>
+    </tr>
+    <tr>
+      <th>39265</th>
+      <td>Tcheca</td>
+      <td>Micro Cervejaria Bamberg</td>
+      <td>Czech Pilsener</td>
+      <td>5.4</td>
+    </tr>
+    <tr>
+      <th>28708</th>
+      <td>Telewhacker</td>
+      <td>The Livery</td>
+      <td>American Brown Ale</td>
+      <td>6.5</td>
+    </tr>
+    <tr>
+      <th>62125</th>
+      <td>Cape May Wheat</td>
+      <td>Cape May Brewing Company</td>
+      <td>American Pale Wheat Ale</td>
+      <td>7.4</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">viz_abv <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>sort_values(<span style="color:#e6db74">&#39;avg_review_overall&#39;</span>)<span style="color:#f92672">.</span>tail(<span style="color:#ae81ff">10</span>)
+viz_abv[[<span style="color:#e6db74">&#39;beer_name&#39;</span>,<span style="color:#e6db74">&#39;brewery_name&#39;</span>,<span style="color:#e6db74">&#39;beer_style&#39;</span>,<span style="color:#e6db74">&#39;beer_abv&#39;</span>]]
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>beer_name</th>
+      <th>brewery_name</th>
+      <th>beer_style</th>
+      <th>beer_abv</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>30456</th>
+      <td>John's Mild Bitter</td>
+      <td>Phantom Canyon Brewing Company</td>
+      <td>English Dark Mild Ale</td>
+      <td>5.25</td>
+    </tr>
+    <tr>
+      <th>53166</th>
+      <td>La Libertine</td>
+      <td>Brasserie Des Vignes</td>
+      <td>Belgian Pale Ale</td>
+      <td>5.00</td>
+    </tr>
+    <tr>
+      <th>58214</th>
+      <td>Mango Double Simcoe</td>
+      <td>Weyerbacher Brewing Co.</td>
+      <td>American Double / Imperial IPA</td>
+      <td>9.00</td>
+    </tr>
+    <tr>
+      <th>19836</th>
+      <td>Weizenbock</td>
+      <td>Silver Peak Restaurant &amp; Brewery</td>
+      <td>Weizenbock</td>
+      <td>6.50</td>
+    </tr>
+    <tr>
+      <th>53141</th>
+      <td>Barley O'Gnarly</td>
+      <td>Mick Duff's Brewing Company</td>
+      <td>American Barleywine</td>
+      <td>9.60</td>
+    </tr>
+    <tr>
+      <th>19795</th>
+      <td>Moon Beam Blue</td>
+      <td>Astoria Brewing Company / Wet Dog Cafe</td>
+      <td>Fruit / Vegetable Beer</td>
+      <td>4.20</td>
+    </tr>
+    <tr>
+      <th>5089</th>
+      <td>J.J.'s Hefeweizen</td>
+      <td>J.J. Bitting Brewing Company</td>
+      <td>Hefeweizen</td>
+      <td>4.80</td>
+    </tr>
+    <tr>
+      <th>19710</th>
+      <td>Blackberry Ale</td>
+      <td>John Harvard's Brewery &amp; Ale House</td>
+      <td>Fruit / Vegetable Beer</td>
+      <td>9.90</td>
+    </tr>
+    <tr>
+      <th>19890</th>
+      <td>La Sambresse Blonde</td>
+      <td>Brasserie Brootcoorens</td>
+      <td>Belgian Strong Pale Ale</td>
+      <td>8.00</td>
+    </tr>
+    <tr>
+      <th>14121</th>
+      <td>White Lion</td>
+      <td>Red Lion Ales</td>
+      <td>American Blonde Ale</td>
+      <td>4.30</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data_quant <span style="color:#f92672">=</span> data[[<span style="color:#e6db74">&#39;beer_abv&#39;</span>,<span style="color:#e6db74">&#39;avg_review_appearance&#39;</span>,<span style="color:#e6db74">&#39;avg_review_aroma&#39;</span>,
+                   <span style="color:#e6db74">&#39;avg_review_palate&#39;</span>,<span style="color:#e6db74">&#39;avg_review_taste&#39;</span>, <span style="color:#e6db74">&#39;avg_review_overall&#39;</span>]]
+corr <span style="color:#f92672">=</span> data_quant<span style="color:#f92672">.</span>corr()
+sns<span style="color:#f92672">.</span>heatmap(corr, xticklabels<span style="color:#f92672">=</span>corr<span style="color:#f92672">.</span>columns, yticklabels<span style="color:#f92672">=</span>corr<span style="color:#f92672">.</span>columns, annot<span style="color:#f92672">=</span>True, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>)
+</code></pre></div><pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x2025bf596c8&gt;
+</code></pre>
+<p><img src="beer1.png" alt="png"></p>
+<p>Here we see that taste, palate and aroma are most closely related to high overall ratings. Next we will look at how these three factors on a regression line.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">fig, (ax1, ax2, ax3) <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">3</span>,figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">8</span>,<span style="color:#ae81ff">8</span>))
+sns<span style="color:#f92672">.</span>lineplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;avg_review_aroma&#39;</span>,y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;avg_review_overall&#39;</span>, data<span style="color:#f92672">=</span>data, ax <span style="color:#f92672">=</span> ax1)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Aroma vs Review&#39;</span>);
+sns<span style="color:#f92672">.</span>lineplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;avg_review_taste&#39;</span>,y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;avg_review_overall&#39;</span>, data<span style="color:#f92672">=</span>data, ax <span style="color:#f92672">=</span> ax2)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;Taste vs Review&#39;</span>);
+sns<span style="color:#f92672">.</span>lineplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;avg_review_palate&#39;</span>,y<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;avg_review_overall&#39;</span>, data<span style="color:#f92672">=</span>data, ax <span style="color:#f92672">=</span> ax3)<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#39;palate vs Review&#39;</span>);
+plt<span style="color:#f92672">.</span>show()
+
+</code></pre></div><p><img src="beer2.png" alt="png"></p>
+<p>We see that aroma, taste and palate are good indicator to a highly rated beer. So these can be used in our Regression models.</p>
+<h4 id="3-regression">3. Regression</h4>
+<p>To predict the overall beer quality we will look at how consumers rated aroma, palate and taste. We will use Multiple Linear Regression to build our model.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">X <span style="color:#f92672">=</span> data[[<span style="color:#e6db74">&#39;avg_review_aroma&#39;</span>,<span style="color:#e6db74">&#39;avg_review_palate&#39;</span>,<span style="color:#e6db74">&#39;avg_review_taste&#39;</span>]]
+Y <span style="color:#f92672">=</span> data[[<span style="color:#e6db74">&#39;avg_review_overall&#39;</span>]]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">x_train, x_test, y_train, y_test <span style="color:#f92672">=</span> train_test_split(X,Y,test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.20</span>,random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#Define the Model</span>
+model <span style="color:#f92672">=</span> linear_model<span style="color:#f92672">.</span>LinearRegression(normalize <span style="color:#f92672">=</span> True)
+model<span style="color:#f92672">.</span>fit(x_train,y_train)
+</code></pre></div><pre><code>LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None, normalize=True)
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#predicting on test data</span>
+pred <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>predict(x_test)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># prediction with sklearn</span>
+aroma <span style="color:#f92672">=</span> <span style="color:#ae81ff">4.4</span>
+palate <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.9</span>
+taste <span style="color:#f92672">=</span> <span style="color:#ae81ff">4.2</span>
+<span style="color:#66d9ef">print</span> (<span style="color:#e6db74">&#39;Predicted Overall Beer Quality: </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>, model<span style="color:#f92672">.</span>predict([[aroma,palate,taste]]))
+</code></pre></div><pre><code>Predicted Overall Beer Quality:
+ [[4.16391755]]
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rmse <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sqrt(mean_squared_error(y_test,pred))
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;RMSE: {}&#39;</span><span style="color:#f92672">.</span>format(rmse))
+
+r2 <span style="color:#f92672">=</span> r2_score(y_test,pred)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;R-Sqruared: {}&#39;</span><span style="color:#f92672">.</span>format(r2))
+</code></pre></div><pre><code>RMSE: 0.28316395826220864
+R-Sqruared: 0.797139119212154
+</code></pre>
+<h4 id="4-conclusion">4. Conclusion</h4>
+<p>From our regression model we got great results for predicting our beer quality with factors like aroma, palate and taste. Our Root squared Mean Error was 0.28 and r-Squared value was 0.79. These metric show us that our model is highly accurate for prediction.</p>
+<p>In conclusion if your beer smells good, has a great taste and gives the consumer a good mouth feel then your beer will be quite popular.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+</code></pre></div>
+        </div>
+
+        
+        
+          
+        
+
+        
+      <hr />
+        <div class="row next-prev-navigator">
+
+
+  
+    
+    
+      
+        
+        
+        <div class="col-md-12 next-article">
+          <a href="/projects/income_analysis/" class="btn btn-outline-info">
+            <span>Next <i class="fas fa-chevron-circle-right"></i></span>
+            <br />
+            <span>Income analysis of adults in the USA</span>
+          </a>
+        </div>
+      
+    
+  
+
+  
+
+  
+
+  
+
+</div>
+
+      <hr />
+      
+      
+          <div id="disqus_thread"></div>
+<script type="text/javascript">
+  (function () {
+    
+    
+    if (window.location.hostname == "localhost") return;
+
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    var disqus_shortname = "does-not-exist";
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+
+      
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section" id="toc-section">
+    
+    <div class="toc-holder">
+      <h5 class="text-center pl-3">Table of Contents</h5>
+      <hr>
+      <div class="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#1-data-preparation">1. Data Preparation</a></li>
+            <li><a href="#1-data-cleaning">1. Data Cleaning</a></li>
+            <li><a href="#2-exploratory-data-analysis">2. Exploratory Data Analysis</a></li>
+            <li><a href="#3-regression">3. Regression</a></li>
+            <li><a href="#4-conclusion">4. Conclusion</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+
+  
+
+
+
+
+  
+
+
+
+
+  
+  
+    
+  
+
+
+<footer class="container-fluid text-center align-content-center footer pb-2">
+  <div class="container pt-5">
+    <div class="row text-left">
+      <div class="col-md-4 col-sm-12">
+        <h5>Navigation</h5>
+        
+        <ul>
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#about">About</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#skills">Skills</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#projects">Projects</a>
+              </li>
+            
+        </ul>
+        
+
+      </div>
+      
+      <div class="col-md-4 col-sm-12">
+        <h5>Contact me:</h5>
+        <ul>
+          
+          <li><span>Email: </span> <span>phadke.amit03@gmail.com</span></li>
+          
+          <li><span>Phone: </span> <span>&#43;1 862-316-3994</span></li>
+          
+        </ul>
+      </div>
+      
+      
+    </div>
+  </div>
+  <hr />
+  <div class="container">
+    <div class="row text-left">
+       <div class="col-md-4">
+        
+        Template by Toha
+      </div>
+      <div class="col-md-4 text-center">© 2020 Copyright.</div>
+      <div class="col-md-4 text-right">
+        <a id="hugo" href="https://gohugo.io/">Powered by
+        <img
+          src="/assets/images/hugo-logo-wide.svg"
+          alt="Hugo Logo"
+          height="18"
+        />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/assets/js/jquery-3.4.1.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/main.js"></script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/assets/js/single.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </body>
+</html>
