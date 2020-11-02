@@ -2,35 +2,35 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Projects on AMIT PHADKE</title>
-    <link>https://amitp13.github.io/projects/</link>
+    <link>http://example.org/projects/</link>
     <description>Recent content in Projects on AMIT PHADKE</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 08 Jun 2020 08:06:25 +0600</lastBuildDate><atom:link href="https://amitp13.github.io/projects/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 08 Jun 2020 08:06:25 +0600</lastBuildDate><atom:link href="http://example.org/projects/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Beer Quality Prediction</title>
-      <link>https://amitp13.github.io/projects/beer_reviews/</link>
+      <link>http://example.org/projects/beer_reviews/</link>
       <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
       
-      <guid>https://amitp13.github.io/projects/beer_reviews/</guid>
+      <guid>http://example.org/projects/beer_reviews/</guid>
       <description>Introduction The following jupyter notebook is an analysis of more 50,000 beers across the world and how users have reviewed them based on aroma, taste, appearance, palate, etc. We will first look at the different subtypes of ratings and how much correlation do they have to the overall rating and which are the strongest indicators of high rated beer. Secondly we will look at the relation between ABV(alcohol level by volume) and ratings.</description>
     </item>
     
     <item>
       <title>Income analysis of adults in the USA</title>
-      <link>https://amitp13.github.io/projects/income_analysis/</link>
+      <link>http://example.org/projects/income_analysis/</link>
       <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
       
-      <guid>https://amitp13.github.io/projects/income_analysis/</guid>
+      <guid>http://example.org/projects/income_analysis/</guid>
       <description>Introduction The following jupyter notebook is an analysis into the Database for Adult Income in the United States. The Us Adult income dataset was extracted by Barry Becker from the 1994 US Census Database. The data set consists of anonymous information such as occupation, age, native country, race, capital gain, capital loss, education, work class and more. Each row is labelled as either having a salary greater than &amp;ldquo;&amp;gt;50K&amp;rdquo; or &amp;ldquo;&amp;lt;=50K&amp;rdquo;.</description>
     </item>
     
     <item>
       <title>Tableau Dashboards</title>
-      <link>https://amitp13.github.io/projects/tab/</link>
+      <link>http://example.org/projects/tab/</link>
       <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
       
-      <guid>https://amitp13.github.io/projects/tab/</guid>
+      <guid>http://example.org/projects/tab/</guid>
       <description>1. UFC Analysis After my analysis in UFC. I want to dive deeper with my analysisand gain more insights on the data. This story is a collection of dashboard that looks at UFC bouts and the athletes participating in the event.
 Tableau Link: https://public.tableau.com/views/UFC_15952798007950/Story1?:language=en&amp;amp;:embed_code_version=3&amp;amp;:loadOrderID=0&amp;amp;:display_count=y&amp;amp;:origin=viz_share_link
  var divElement = document.getElementById(&#39;viz1604298825219&#39;); var vizElement = divElement.getElementsByTagName(&#39;object&#39;)[0]; vizElement.style.width=&#39;1016px&#39;;vizElement.style.height=&#39;991px&#39;; var scriptElement = document.createElement(&#39;script&#39;); scriptElement.src = &#39;https://public.tableau.com/javascripts/api/viz_v1.js&#39;; vizElement.parentNode.insertBefore(scriptElement, vizElement); 2. India in the Olympics I have deep dived into the Olympics in this dashboard, specifically The Indian Olympics.</description>
@@ -38,10 +38,10 @@ Tableau Link: https://public.tableau.com/views/UFC_15952798007950/Story1?:langua
     
     <item>
       <title>UFC Data analysis</title>
-      <link>https://amitp13.github.io/projects/ufc/</link>
+      <link>http://example.org/projects/ufc/</link>
       <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
       
-      <guid>https://amitp13.github.io/projects/ufc/</guid>
+      <guid>http://example.org/projects/ufc/</guid>
       <description>Introduction The Ultimate Fighting Championship is one of the fastest growing sport in the world. Since its inception in 1993 it has gained a lot of popularity and its fighters have reached celebrity status. The following project will try to gain insights by visualizing and analyzing data taken from different sources such as wikipedia.com, kaggle.com and fightmetrics.com.
 Datasets We will make the use of two datasets for this project. The first one is a named &amp;lsquo;fight-eda&amp;rsquo; is a collection of all the fights scheduled by the UFC since 1993.</description>
     </item>
