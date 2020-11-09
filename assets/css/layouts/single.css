@@ -128,6 +128,8 @@ body {
 
 .post-content {
   padding: 15px;
+  max-width: 100%;
+  overflow-x: hidden
 }
 
 .post-content h1,
