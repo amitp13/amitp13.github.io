@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Song Recomendation System using Spotify Data</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/assets/css/layouts/main.css"/>
+<link rel="stylesheet" href="/assets/css/style.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/navbar.css"/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;500;600" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+
+
+<link rel="icon" type="image/png" href="/assets/images/index.png" />
+
+
+<link rel="stylesheet" href="/assets/css/style.css"/>
+
+    
+<meta name="description" content="Song Recomendation System using Spotify Data" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/assets/css/layouts/single.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/sidebar.css">
+
+
+    
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+  
+
+
+  
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <a class="navbar-brand" href="/">
+      AMIT PHADKE</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+      
+      <li id="nav-item"><a href="https://amitp13.github.io/#projects" data-filter="all" class="nav-link">All Projects</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <img src="/assets/images/index.png" class="d-none" id="main-logo">
+  <img src="/assets/images/index.png" class="d-none" id="inverted-logo">
+</nav>
+
+
+
+      
+      
+
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(https://amitp13.github.io/images/projects/spotify.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        
+
+        <div class="title">
+          <h1>Song Recomendation System using Spotify Data</h1>
+        </div>
+
+        <div class="post-content" id="post-content">
+          <h3 id="introduction">Introduction</h3>
+<p>This workbook deep dives into the spotify data and demonstrates a
+recommendation system based on a songs’s audio properties. With the help
+of Spotify’s API we can get a songs’s energy, loudness, dancebility,
+amount of instrumentallness and valence. These properties possibly are
+related to each other and can be clustered to get similar songs. The aim
+of the project will be to use clustering algorithms to build a
+recommendation system.</p>
+<h4 id="1-data-preparation">1. Data Preparation</h4>
+<p>All of our data is extracted from the spotify API. A total of 45000
+songs are present along with 14 variables. For the considertion of
+memory we will only be using a chunk of the data. In this section will
+import our dataset and import libraries that will be used in the
+analysis.</p>
+<pre><code>library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plyr)
+library(lubridate)
+library(factoextra)
+library(NbClust)
+library(reshape2)
+library(clValid)
+
+spotify &lt;- read.csv(&quot;C:\\Users\\phadk\\Desktop\\Work\\projects\\Top-Songs-Analysis\\songs.csv&quot;,header = TRUE)
+Data &lt;- spotify
+Data[1:10,]
+
+##                        track            artist duration_ms time_signature mode
+## 1                  Lucky Man Montgomery Gentry      196707              4    1
+## 2             On The Hotline      Pretty Ricky      242587              4    0
+## 3         Clouds Of Dementia        Candlemass      338893              4    1
+## 4   Heavy Metal, Raise Hell!     Zwartketterij      255667              4    1
+## 5            I Got A Feelin'  Billy Currington      193760              4    1
+## 6            Dantzig Station      State Of Art      192720              4    0
+## 7                   Divorced       Blacklisted       89427              4    1
+## 8          Where I Come From      Alan Jackson      239240              4    0
+## 9         Nothin' To Die For        Tim McGraw      253640              4    1
+## 10 I Want to Know Your Plans      Say Anything      314286              3    1
+##    danceability energy loudness speechiness acousticness instrumentalness
+## 1         0.578  0.471   -7.270      0.0289     3.68e-01          0.00000
+## 2         0.704  0.854   -5.477      0.1830     1.85e-02          0.00000
+## 3         0.162  0.836   -3.009      0.0473     1.11e-04          0.00457
+## 4         0.188  0.994   -3.745      0.1660     7.39e-06          0.07840
+## 5         0.630  0.764   -4.353      0.0275     3.63e-01          0.00000
+## 6         0.726  0.837   -7.223      0.0965     3.73e-01          0.26800
+## 7         0.365  0.922   -2.644      0.0710     2.85e-03          0.00000
+## 8         0.726  0.631   -8.136      0.0334     2.20e-01          0.00000
+## 9         0.481  0.786   -5.654      0.0288     5.38e-02          0.00000
+## 10        0.647  0.324   -9.679      0.0377     3.54e-01          0.00000
+##    liveness valence   tempo
+## 1    0.1590   0.532 133.061
+## 2    0.1480   0.688  92.988
+## 3    0.1740   0.300  86.964
+## 4    0.1920   0.333 148.440
+## 5    0.1250   0.631 112.098
+## 6    0.1360   0.969 135.347
+## 7    0.3210   0.290  77.250
+## 8    0.1930   0.746 124.711
+## 9    0.0759   0.389 153.105
+## 10   0.1150   0.344 124.213
+</code></pre>
+<h4 id="2-data-cleaning">2. Data Cleaning</h4>
+<p>You can also embed plots, for example:</p>
+<pre><code>dim(Data)  #getting rows and columns
+
+## [1] 41106    14
+
+summary(Data) #summary of entire data
+
+##     track              artist           duration_ms      time_signature
+##  Length:41106       Length:41106       Min.   :  15168   Min.   :0.000  
+##  Class :character   Class :character   1st Qu.: 172928   1st Qu.:4.000  
+##  Mode  :character   Mode  :character   Median : 217907   Median :4.000  
+##                                        Mean   : 234878   Mean   :3.894  
+##                                        3rd Qu.: 266773   3rd Qu.:4.000  
+##                                        Max.   :4170227   Max.   :5.000  
+##       mode         danceability        energy            loudness      
+##  Min.   :0.0000   Min.   :0.0000   Min.   :0.000251   Min.   :-49.253  
+##  1st Qu.:0.0000   1st Qu.:0.4200   1st Qu.:0.396000   1st Qu.:-12.816  
+##  Median :1.0000   Median :0.5520   Median :0.601000   Median : -9.257  
+##  Mean   :0.6934   Mean   :0.5397   Mean   :0.579545   Mean   :-10.222  
+##  3rd Qu.:1.0000   3rd Qu.:0.6690   3rd Qu.:0.787000   3rd Qu.: -6.374  
+##  Max.   :1.0000   Max.   :0.9880   Max.   :1.000000   Max.   :  3.744  
+##   speechiness       acousticness    instrumentalness     liveness     
+##  Min.   :0.00000   Min.   :0.0000   Min.   :0.00000   Min.   :0.0130  
+##  1st Qu.:0.03370   1st Qu.:0.0394   1st Qu.:0.00000   1st Qu.:0.0940  
+##  Median :0.04340   Median :0.2580   Median :0.00012   Median :0.1320  
+##  Mean   :0.07296   Mean   :0.3642   Mean   :0.15442   Mean   :0.2015  
+##  3rd Qu.:0.06980   3rd Qu.:0.6760   3rd Qu.:0.06125   3rd Qu.:0.2610  
+##  Max.   :0.96000   Max.   :0.9960   Max.   :1.00000   Max.   :0.9990  
+##     valence           tempo      
+##  Min.   :0.0000   Min.   :  0.0  
+##  1st Qu.:0.3300   1st Qu.: 97.4  
+##  Median :0.5580   Median :117.6  
+##  Mean   :0.5424   Mean   :119.3  
+##  3rd Qu.:0.7680   3rd Qu.:136.5  
+##  Max.   :0.9960   Max.   :241.4
+
+colSums(is.na(Data)) #finding missing data
+
+##            track           artist      duration_ms   time_signature
+##                0                0                0                0
+##             mode     danceability           energy         loudness
+##                0                0                0                0
+##      speechiness     acousticness instrumentalness         liveness
+##                0                0                0                0
+##          valence            tempo
+##                0                0
+
+#Convert ms to secs
+Data$duration_ms &lt;- Data$duration_ms/1000
+colnames(Data)[3]&lt;-&quot;duration_s&quot;
+
+#scaling our audio properties data
+Data[,c(6:14)] &lt;- scale(Data[,c(6:14)])
+</code></pre>
+<h4 id="3-exploratory-data-analysis">3. Exploratory Data Analysis</h4>
+<p>There are few variables that will be interesting to look at in this
+dataset. First we will see which of the artist is most frequented in
+this dataset.</p>
+<pre><code>artist_freq &lt;- count(Data, 'artist')
+wordcloud2(data = artist_freq)
+</code></pre>
+<p><img src="/images/projects/wc.PNG" alt="1"></p>
+<p>We see that Aretha Franklin has the most number of songs present in this
+dataset along with artists like Brad Paisley, The Bee Gees, Billy Joel
+etc.</p>
+<p>Next will see if the duration of the song can be useful for clustring
+our data.</p>
+<pre><code>qplot(seq_along(Data$duration_s), Data$duration_s,  main = &quot;Duration of Songs&quot;,
+      xlab = 'Seconds',
+      ylab = 'No. of songs',)
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-8-1.png" alt=""></p>
+<p>According to the plot most of our songs have similar duration and only a
+handful of have amuch larger duration. Taking duration in our clutering
+calculation will not prove fruitful in the long run.</p>
+<pre><code>mode_freq &lt;- count(Data,'mode')
+mode_freq$mode[mode_freq$mode == 0] &lt;- &quot;Minor&quot;
+mode_freq$mode[mode_freq$mode == 1] &lt;- &quot;Major&quot;
+barplot(height=mode_freq$freq, names=mode_freq$mode,
+        col=rgb(0.8,0.1,0.1,0.6),
+        xlab=&quot;mode&quot;,
+        ylab=&quot;frequency&quot;,
+        main=&quot;Modality of songs&quot;,
+)
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-9-1.png" alt="">
+Mode explains if the song is in Major and Minor key. 0 denotes a Minor
+key while 1 is Major key. Mode is related to the valence of the song and
+hence we can exclude this variable from our clustering as well.</p>
+<pre><code>ap &lt;- melt(Data[,c(6:14)])
+
+## No id variables; using all as measure variables
+
+ggplot(ap,aes(x = value)) +
+  facet_wrap(~variable,scales = &quot;free_x&quot;) +
+  geom_histogram()
+
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-10-1.png" alt="">
+The following plot show the distribution of all the audio properties.
+Most of the varaibles are skewed except for tempo which is evenly
+distributed.Another good way to explore data and evaluate dimentionality
+is by doing a principal component analysis on the data.</p>
+<pre><code>data.pca = Data[,c(6:14)]   #taking out only audio properties variables
+pca &lt;- prcomp(data.pca, scale=TRUE, center=TRUE)
+summary(pca)
+
+## Importance of components:
+##                           PC1    PC2    PC3    PC4     PC5     PC6     PC7
+## Standard deviation     1.7283 1.1717 1.0483 0.9585 0.94517 0.88254 0.66369
+## Proportion of Variance 0.3319 0.1525 0.1221 0.1021 0.09926 0.08654 0.04894
+## Cumulative Proportion  0.3319 0.4844 0.6065 0.7086 0.80786 0.89440 0.94334
+##                            PC8    PC9
+## Standard deviation     0.60710 0.3759
+## Proportion of Variance 0.04095 0.0157
+## Cumulative Proportion  0.98430 1.0000
+
+pca$rotation
+
+##                          PC1         PC2         PC3          PC4         PC5
+## danceability     -0.31174424  0.57860198 -0.10090785 -0.047969088  0.11778551
+## energy           -0.49394517 -0.28626997  0.08222630  0.144755507  0.08860337
+## loudness         -0.48045366 -0.17368853  0.09014695  0.200386158  0.01375291
+## speechiness      -0.11011289 -0.03500931 -0.71292668 -0.312428434  0.56950996
+## acousticness      0.43811183  0.22896843 -0.16362915 -0.174673424 -0.26598585
+## instrumentalness  0.29303181 -0.25144269  0.17026099  0.002986043  0.35622796
+## liveness         -0.06570555 -0.35826701 -0.59931623  0.144145144 -0.58427094
+## valence          -0.33141772  0.44918856  0.02620362 -0.212084384 -0.29598385
+## tempo            -0.15462401 -0.32573044  0.22591068 -0.861801219 -0.16467991
+##                          PC6         PC7        PC8         PC9
+## danceability     -0.21883075 -0.42891873 -0.5235851 -0.18888850
+## energy           -0.14708517  0.25362328  0.0885316 -0.73804141
+## loudness          0.15955744  0.40631897 -0.5134418  0.48615858
+## speechiness       0.07592012  0.17694803  0.1173798  0.07469570
+## acousticness      0.05340414  0.59264699 -0.4114874 -0.32278993
+## instrumentalness -0.79385188  0.09381965 -0.1974334  0.13049893
+## liveness         -0.29379076 -0.21732351 -0.1016949  0.04596578
+## valence          -0.42240356  0.35562448  0.4427205  0.23286060
+## tempo             0.03828859 -0.14685840 -0.1611678 -0.01123254
+
+fviz_screeplot(pca, type='bar',main='Scree plot')
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-12-1.png" alt=""></p>
+<pre><code>fviz_pca_biplot(pca,
+                col.var = &quot;#2E9FDF&quot;, # Variables color
+                col.ind = &quot;#696969&quot;  # Individuals color
+                )
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-13-1.png" alt=""></p>
+<p>As per our EDA we see that most of the varaible are related to each
+other in terms of dimensionality. For example we can intuitively say
+that songs high in acousticness and instrumentalness will have a low
+energy and loudness reading. Songs with a lower tempo will be have low
+dancebility. Based on these factors we can cluster our songs.</p>
+<h4 id="4-clustering">4. Clustering</h4>
+<p>From our EDA we got a better understanding of each variable.Tempo is
+normally distributed hence we will not use that for clutering.</p>
+<p>Liveness measures the amount of presence of a live audience hence will
+is low for almost all the songs in our database.</p>
+<p>Since spotify also host stand-ups and podcast these tracks have a high
+speechiness value. Thus Spechiness variable in our databse of songs is
+low or closer to 0 across all songs.</p>
+<p>For clustering we will use our audio properties of acousticness,
+instrumentalness, valence, dancebility, loudness and energy. The
+algorithms we will test our clustering on are Kmeans algorithm and
+Hierarchical clustering algoritm.</p>
+<p>First task to random sample our data for memory mangement and then split
+it into training and testing sets respectively.</p>
+<pre><code>data_sample &lt;- Data[sample(nrow(Data),20553),]
+training_sample &lt;- sample(c(TRUE, FALSE), nrow(data_sample), replace = T, prob = c(0.75,0.2))
+train &lt;- data_sample[training_sample, ]
+test &lt;- data_sample[!training_sample, ]
+</code></pre>
+<p>First we will test the performance of our data based on K-means
+clustering. This is centroid based clustering algorithm. It will create
+a cluster based on centroid or central vector and map other vectors
+based on their distance with this central vector.</p>
+<p>To find the optimum k value we will use the silhouette method and elbow
+method.</p>
+<pre><code>fviz_nbclust(train[,c(5,6,7,9,10,13)], kmeans, method=&quot;silhouette&quot;)
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-15-1.png" alt=""></p>
+<pre><code>fviz_nbclust(train[,c(5,6,7,9,10,13)], kmeans, method=&quot;wss&quot;) + geom_vline(xintercept = 4, linetype=2)
+</code></pre>
+<p><img src="/images/projects/wss.PNG" alt="2"></p>
+<p>According to silhouette method we see that optimal value of K is 2.
+While elbow method gives 4 as the optimal k value. Thus lets assume K as
+2 and run our data through the Kmeans algorithm.</p>
+<pre><code>set.seed(1234)
+clusters2 &lt;- kmeans(train[,c(5,6,7,9,10,13)], 2)
+fviz_cluster(clusters2, data = train[,c(6:14)],
+             palette = c(&quot;#2E9FDF&quot;, &quot;#00AFBB&quot;),
+             geom = &quot;point&quot;,
+             ellipse.type = &quot;convex&quot;,
+             ggtheme = theme_bw()
+)
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-16-1.png" alt=""></p>
+<pre><code>clusters2$centers
+
+##        mode danceability    energy speechiness acousticness    valence
+## 1 0.7213397   -0.6484140 -1.067117  -0.2863828    1.0579099 -0.6905693
+## 2 0.6778334    0.3058295  0.516035   0.1456616   -0.5040675  0.3265168
+</code></pre>
+<p>Current cluster show us that one cluster is high in acousticness and
+instrumentalness while the remaining fall in the other cluster. Thus we
+can cluster our songs to acoustic-instrumental songs and energetic-dance
+songs. For an effective recommendation we need more clusters. We will
+test if our data is more suited for heirarchical clustering.</p>
+<p>In heirarchical clustering distances of each data point are measured and
+relation between rows and/or columns is evaluated. First we will
+calculate the distances using euclidean distance formula.</p>
+<pre><code>set.seed(123)
+distances &lt;- dist(train[,c(5,6,7,9,10,13)],method=&quot;euclidean&quot;)
+hcluster &lt;- hclust(distances, method=&quot;ward&quot;)
+
+## The &quot;ward&quot; method has been renamed to &quot;ward.D&quot;; note new &quot;ward.D2&quot;
+
+plot(hcluster)
+rect.hclust(hcluster , k = 5, border = 2:6)
+abline(h = 5, col = 'red')
+</code></pre>
+<p><img src="/images/projects/unnamed-chunk-19-1.png" alt=""></p>
+<pre><code>cluster_groups_5 &lt;- cutree(hcluster, k=5)
+
+print(&quot;Dancebility&quot;)
+
+## [1] &quot;Dancebility&quot;
+
+tapply(train$danceability, cluster_groups_5,mean)
+
+##          1          2          3          4          5
+## -0.9970088 -0.3437079  0.1954204  0.7145587  0.9621554
+
+print(&quot;Energy&quot;)
+
+## [1] &quot;Energy&quot;
+
+tapply(train$energy, cluster_groups_5,mean)
+
+##          1          2          3          4          5
+## -1.3850231  0.4708439 -0.3796032  0.5649484  0.2693118
+
+print(&quot;Loudness&quot;)
+
+## [1] &quot;Loudness&quot;
+
+tapply(train$loudness, cluster_groups_5,mean)
+
+##          1          2          3          4          5
+## -1.1641339  0.3900466 -0.1940235  0.3554049  0.3561849
+
+print(&quot;Acoustiveness&quot;)
+
+## [1] &quot;Acoustiveness&quot;
+
+tapply(train$acousticness, cluster_groups_5,mean)
+
+##          1          2          3          4          5
+##  1.4247389 -0.6254952  0.7981170 -0.6537031 -0.3750602
+
+print(&quot;Instrumentalness&quot;)
+
+## [1] &quot;Instrumentalness&quot;
+
+tapply(train$instrumentalness, cluster_groups_5,mean)
+
+##           1           2           3           4           5
+##  0.63203574  0.01577037 -0.13034234 -0.23192684 -0.39480433
+
+print(&quot;Valence&quot;)
+
+## [1] &quot;Valence&quot;
+
+tapply(train$valence, cluster_groups_5,mean)
+
+##          1          2          3          4          5
+## -1.1000403 -0.5542860  0.6749516  0.9428078  0.2348292
+</code></pre>
+<p>Assuming k=4</p>
+<pre><code>plot(hcluster)
+rect.hclust(hcluster , k = 4, border = 2:6)
+abline(h = 4, col = 'red')
+</code></pre>
+<p><img src="song-recomender_files/figure-markdown_strict/unnamed-chunk-21-1.png" alt=""></p>
+<pre><code>cluster_groups_4 &lt;- cutree(hcluster, k=4)
+
+print(&quot;Dancebility&quot;)
+
+## [1] &quot;Dancebility&quot;
+
+tapply(train$danceability, cluster_groups_4,mean)
+
+##          1          2          3          4
+## -0.9970088 -0.3437079  0.1954204  0.7760060
+
+print(&quot;Energy&quot;)
+
+## [1] &quot;Energy&quot;
+
+tapply(train$energy, cluster_groups_4,mean)
+
+##          1          2          3          4
+## -1.3850231  0.4708439 -0.3796032  0.4915787
+
+print(&quot;Loudness&quot;)
+
+## [1] &quot;Loudness&quot;
+
+tapply(train$loudness, cluster_groups_4,mean)
+
+##          1          2          3          4
+## -1.1641339  0.3900466 -0.1940235  0.3555985
+
+print(&quot;Acoustiveness&quot;)
+
+## [1] &quot;Acoustiveness&quot;
+
+tapply(train$acousticness, cluster_groups_4,mean)
+
+##          1          2          3          4
+##  1.4247389 -0.6254952  0.7981170 -0.5845509
+
+print(&quot;Instrumentalness&quot;)
+
+## [1] &quot;Instrumentalness&quot;
+
+tapply(train$instrumentalness, cluster_groups_4,mean)
+
+##           1           2           3           4
+##  0.63203574  0.01577037 -0.13034234 -0.27234899
+
+print(&quot;Valence&quot;)
+
+## [1] &quot;Valence&quot;
+
+tapply(train$valence, cluster_groups_4,mean)
+
+##          1          2          3          4
+## -1.1000403 -0.5542860  0.6749516  0.7671051
+</code></pre>
+<p>Here we see that 4 clusters can be formed with properties having higher
+averages. While cluseter 5 can be used as for songs with miscelleaneous
+properties. WE can test our hypothesisis using the Elbow method.</p>
+<p>With k as 4 or 5 we see 4 cluster seem the best options with 5 as misc
+category.</p>
+<p>Cluster 1 : happy sounding songs with high energy and highly
+danceability</p>
+<p>Cluster 2 : high energy songs with low dancebility, probably hard rock
+or rock songs</p>
+<p>Cluster 3 : acoustic songs with major chords and bit of groovy tone.</p>
+<p>Cluster 4 : highly acoustic and instrumental songs with very low mood or
+low valence. Probably classical or slow rnB</p>
+<p>Cluster 5 : songs of the misc category.</p>
+<p>Evaluate the sizes of ach cluster if k=5</p>
+<pre><code>table(cluster_groups_5)
+
+## cluster_groups_5
+##    1    2    3    4    5
+## 2721 5369 3051 3811 1258
+</code></pre>
+<p>Evaluate the sizes of ach cluster if k=5</p>
+<pre><code>table(cluster_groups_4)
+
+## cluster_groups_4
+##    1    2    3    4
+## 2721 5369 3051 5069
+</code></pre>
+<p>When K=5 we see an even distribution across all clusters except cluster
+4. This cluster consists of songs with high energy and low dancebility
+which is very rare. When K=4 cluster 2 and 3 remain the same while
+clusters 4 and 1 increase by about 50%. With average analysis, size of
+clusters and our optimal cluster analysis we will select k as 4.</p>
+<h4 id="5-recommending-songs-based-on-a-single-song">5. Recommending songs based on a single song.</h4>
+<pre><code>clusters &lt;- data.frame(hcluster$order)
+
+#getting a dataframe with clusters and tracks
+train_w_clusters = cbind(train, cluster_groups_4)
+train_w_clusters[1:10,]
+
+##                                         track
+## 37623                                   Frage
+## 37094                          What If I Said
+## 13285                              Love Me Do
+## 32452                       Calling All Girls
+## 27827                          Rocky II Disco
+## 24573            Thank You For Being A Friend
+## 8341                          Hot Girl Bummer
+## 2765                                    Go On
+## 21346 If Only I Had My Mind On Something Else
+## 32266                                Shine On
+##                                        artist duration_s time_signature mode
+## 37623                           Rune Lindblad    389.507              3    1
+## 37094 Anita Cochran (Duet With Steve Wariner)    291.689              4    1
+## 13285                             The Beatles    141.693              4    1
+## 32452                                   Queen    231.853              4    1
+## 27827                        Maynard Ferguson    432.533              4    1
+## 24573                             Andrew Gold    280.760              4    1
+## 8341                                blackbear    185.093              1    0
+## 2765                            George Strait    201.760              4    1
+## 21346                                Bee Gees    153.160              4    1
+## 32266                             George Duke    312.680              4    1
+##       danceability      energy   loudness speechiness acousticness
+## 37623  -1.13425992 -2.00430756 -3.2512597  1.64948071   0.30628088
+## 37094  -0.03765007 -0.73841634  0.4517497 -0.52792447   0.09088634
+## 13285  -0.11075739  0.98743912  0.7518461  0.08871668   0.06433085
+## 32452   0.40661751  0.55993364  0.6537594 -0.44547339  -0.92825440
+## 27827   0.37849931  0.77368638  0.6501823  0.37206967  -0.67922290
+## 24573   0.87337965 -0.04569913 -0.6307814 -0.50586009  -0.58480338
+## 8341    1.34014179 -0.08132458  0.5859835  0.05387820  -0.69692656
+## 2765    0.92961605 -0.09715812  0.3263643 -0.57089193   0.25021929
+## 21346  -1.16237812 -0.82154240 -0.6017884 -0.49308598  -0.42547043
+## 32266   1.59882924  0.83306214 -0.0535570 -0.37928027  -0.95658025
+##       instrumentalness   liveness    valence      tempo cluster_groups_4
+## 37623        2.3970735  0.6386785 -1.8806059  1.9425084                1
+## 37094       -0.5087341 -0.1765423 -1.6363375  0.1815450                2
+## 13285       -0.5085298  0.1472334  0.7539761  0.9848759                3
+## 32452       -0.5084168 -0.8113738  0.2714245  0.6561343                4
+## 27827        0.6048293  3.3502996  0.4696821  0.4104888                2
+## 24573       -0.5087341 -0.4425008  0.9110859 -0.2560668                4
+## 8341        -0.5087341  1.1416871  0.5070892  0.3660197                4
+## 2765        -0.4596451  0.3033395 -0.2073863 -0.5098913                2
+## 21346       -0.5087297 -0.4829728  0.1966103  0.8039409                3
+## 32266       -0.4848485 -0.7928723  1.5657101 -0.0154731                4
+</code></pre>
+<p>My most recent favorite song is Finding songs similar Ain’t No Rest For
+The Wicked by Cage the elephant’s. So I want to listen songs similar to
+that</p>
+<pre><code>x &lt;- subset(train_w_clusters,track==&quot;Ain't No Rest For The Wicked&quot; &amp; artist==&quot;Cage The Elephant&quot;)
+all_songs &lt;- subset(train_w_clusters, cluster_groups_4==x$cluster_groups_4)  #all cluster songs
+
+#Top 10 songs of that input songs cluster
+all_songs[1:10,c(1,2)]
+
+##        track artist
+## 38938  5 O'Clock	Nonchalant		
+## 31313  It's Like We Never Said Goodbye	Crystal Gayle		
+## 15180  Odds And Ends	Dionne Warwick		
+## 27168 	Solid State Survivor - 2018 Bob Ludwig Remastering	YELLOW MAGIC ORCHESTRA		
+## 24173 	Standing At The End Of The Line	Lobo		
+## 30538  Boy From New York City	The Manhattan Transfer		
+## 17983  The Lesson	Vikki Carr		
+## 28825  Lucky	Eye To Eye		
+## 40159  SÃ³ VocÃª	FÃ¡bio Jr.		
+## 28502  Since You Been Gone	Rainbow
+</code></pre>
+<h4 id="6-future-work">6. Future work</h4>
+<p>While currently we are getting a number of songs from 1 input, it will interesting to get an input data of entire playlist.
+This will allows us to explain segmentation of users in more depth.</p>
+<p>The applications of this project can open doors to apps with a well designed front-end that will be easy to use for anyone. It can also be used
+in research that will allows us to analyze end users and their behavior with respect to music they hear.</p>
+
+        </div>
+
+        
+        
+          
+        
+
+        
+      <hr />
+        <div class="row next-prev-navigator">
+
+
+  
+
+  
+
+  
+    
+      
+      <div class="col-md-6 previous-article">
+        <a href="/projects/income_analysis/" class="btn btn-outline-info">
+          <span><i class="fas fa-chevron-circle-left"></i> Prev</span>
+          <br />
+          <span>Income analysis of adults in the USA</span>
+        </a>
+      </div>
+      
+    
+    
+      
+        
+        
+          
+              
+          
+        
+        <div class="col-md-6 next-article">
+          <a href="/projects/tab/" class="btn btn-outline-info">
+            <span>Next <i class="fas fa-chevron-circle-right"></i></span>
+            <br />
+            <span>Tableau Dashboards</span>
+          </a>
+        </div>
+      
+    
+  
+
+  
+
+  
+
+</div>
+
+      <hr />
+      
+      
+          <div id="disqus_thread"></div>
+<script type="text/javascript">
+  (function () {
+    
+    
+    if (window.location.hostname == "localhost") return;
+
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    var disqus_shortname = "does-not-exist";
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+
+      
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section" id="toc-section">
+    
+    <div class="toc-holder">
+      <h5 class="text-center pl-3">Table of Contents</h5>
+      <hr>
+      <div class="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a>
+          <ul>
+            <li><a href="#1-data-preparation">1. Data Preparation</a></li>
+            <li><a href="#2-data-cleaning">2. Data Cleaning</a></li>
+            <li><a href="#3-exploratory-data-analysis">3. Exploratory Data Analysis</a></li>
+            <li><a href="#4-clustering">4. Clustering</a></li>
+            <li><a href="#5-recommending-songs-based-on-a-single-song">5. Recommending songs based on a single song.</a></li>
+            <li><a href="#6-future-work">6. Future work</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+
+  
+
+
+
+
+  
+
+
+
+
+  
+  
+    
+  
+
+
+<footer class="container-fluid text-center align-content-center footer pb-2">
+  <div class="container pt-5">
+    <div class="row text-left">
+      <div class="col-md-4 col-sm-12">
+        <h5>Navigation</h5>
+        
+        <ul>
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#about">About</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#skills">Skills</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#projects">Projects</a>
+              </li>
+            
+        </ul>
+        
+
+      </div>
+      
+      <div class="col-md-4 col-sm-12">
+        <h5>Contact me:</h5>
+        <ul>
+          
+          <li><span>Email: </span> <span>phadke.amit03@gmail.com</span></li>
+          
+          <li><span>Phone: </span> <span>&#43;1 862-316-3994</span></li>
+          
+        </ul>
+      </div>
+      
+      
+    </div>
+  </div>
+  <hr />
+  <div class="container">
+    <div class="row text-left">
+       <div class="col-md-4">
+        
+        Template by Toha
+      </div>
+      <div class="col-md-4 text-center">© 2020 Copyright.</div>
+      <div class="col-md-4 text-right">
+        <a id="hugo" href="https://gohugo.io/">Powered by
+        <img
+          src="/assets/images/hugo-logo-wide.svg"
+          alt="Hugo Logo"
+          height="18"
+        />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/assets/js/jquery-3.4.1.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/main.js"></script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/assets/js/single.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </body>
+</html>

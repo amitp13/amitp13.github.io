@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>Song Recomendation System using Spotify Data</title>
+      <link>https://amitp13.github.io/projects/song-recomender/</link>
+      <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
+      
+      <guid>https://amitp13.github.io/projects/song-recomender/</guid>
+      <description>Introduction This workbook deep dives into the spotify data and demonstrates a recommendation system based on a songs’s audio properties. With the help of Spotify’s API we can get a songs’s energy, loudness, dancebility, amount of instrumentallness and valence. These properties possibly are related to each other and can be clustered to get similar songs. The aim of the project will be to use clustering algorithms to build a recommendation system.</description>
+    </item>
+    
+    <item>
       <title>Tableau Dashboards</title>
       <link>https://amitp13.github.io/projects/tab/</link>
       <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
