@@ -368,7 +368,7 @@ if (!doNotTrack) {
 <p>The first thing that Beane and DePodesta wanted to know was how to they can make it to the playoff&rsquo;s. They argued that games at the playoffs are much more unpredictable and hence hard to quantify. In the case of IPL there are only 3 playoff matches each season hence that is much smaller dataset to analyze on. So the goal of the team leads us to the next question we want to ask is</p>
 <p><b> How does a team make it to the playoffs? </b></p>
 <p>Easy answer. Win more games. Now the final question before we start analysis,</p>
-<h5 id="how-many-wins-does-it-take-to-make-it-to-the-playoffs">How many wins does it take to make it to the playoffs?</h5>
+<p><b> How many wins does it take to make it to the playoffs? <b></p>
 <p>To answer this question we will build a scatter plot if a team made it to playoff against number of wins.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R">m <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ggplot</span>(data, <span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Won,
                       y <span style="color:#f92672">=</span> Team,
@@ -376,7 +376,7 @@ if (!doNotTrack) {
 <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>)
 
 m <span style="color:#f92672">+</span> <span style="color:#a6e22e">geom_vline</span>(<span style="color:#a6e22e">aes</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">7.9</span>), color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dashed&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">xlab</span>(<span style="color:#e6db74">&#34;Wins&#34;</span>)
-</code></pre></div><p><img src="mb_10_0.png" alt="png"></p>
+</code></pre></div><p><img src="/images/projects/mb_10_0.png" alt="png"></p>
 <p>The following graph shows us that when number of is more than 8 those teams our possibly making it to the playoffs.</p>
 <p>Now our goal is much more clear. A team needs to win atleast 8 games out of 14 games to make it to the playoffs. Now we need ask how does a team win 7 games out of the 14 games in the league games.</p>
 <p>Here DePodesta comes to our rescue. He argued that in baseball wins had a relationship with the difference between runs scored and runs allowed. Lets test if this is is the issue for IPL.</p>
@@ -386,7 +386,7 @@ m <span style="color:#f92672">+</span> <span style="color:#a6e22e">geom_vline</s
                 y <span style="color:#f92672">=</span> Won,
                 color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
      <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>)
-</code></pre></div><p><img src="mb_13_0.png" alt="png"></p>
+</code></pre></div><p><img src="/images/projects/mb_13_0.png" alt="png"></p>
 <p>The following graph shows that teams that made the playoffs(marked in red), had higher run difference. This validates our assumption that runs diffrential is corelated with wins. Next we will use linear regression to predict number of wins based on run diffrential.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R">winsReg <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">lm</span>(Won <span style="color:#f92672">~</span> RD, data <span style="color:#f92672">=</span> data)
 winsReg
@@ -411,14 +411,14 @@ RD ≈ 75 <br></p>
                  color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
      <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>) <span style="color:#f92672">+</span>
      <span style="color:#a6e22e">geom_vline</span>(<span style="color:#a6e22e">aes</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">75</span>), color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dashed&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
-</code></pre></div><p><img src="mb_17_0.png" alt="png"></p>
+</code></pre></div><p><img src="/images/projects/mb_17_0.png" alt="png"></p>
 <p>It seems like we can adjust our RD a bit more to include more wins.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">ggplot</span>(data, <span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> RD,
                  y <span style="color:#f92672">=</span> Won,
                  color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
      <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>) <span style="color:#f92672">+</span>
      <span style="color:#a6e22e">geom_vline</span>(<span style="color:#a6e22e">aes</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">70</span>), color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dashed&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
-</code></pre></div><p><img src="mb_19_0.png" alt="png"></p>
+</code></pre></div><p><img src="/images/projects/mb_19_0.png" alt="png"></p>
 <p>70 seems like a good threshold to set our further analysis. Which brings to our fourth and final question :</p>
 <p><b> How can a team score 70 more runs than they allow?? </b></p>
 
@@ -532,11 +532,7 @@ RD ≈ 75 <br></p>
             <li><a href="#1-data-collection">1. Data Collection</a></li>
             <li><a href="#2-dataset">2. Dataset</a></li>
             <li><a href="#3-data-cleaning">3. Data Cleaning</a></li>
-            <li><a href="#4-setting-up-baselines">4. Setting up Baselines</a>
-              <ul>
-                <li><a href="#how-many-wins-does-it-take-to-make-it-to-the-playoffs">How many wins does it take to make it to the playoffs?</a></li>
-              </ul>
-            </li>
+            <li><a href="#4-setting-up-baselines">4. Setting up Baselines</a></li>
           </ul>
         </li>
       </ul>
