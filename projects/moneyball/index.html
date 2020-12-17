@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Moneyballing T20 Cricket</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/assets/css/layouts/main.css"/>
+<link rel="stylesheet" href="/assets/css/style.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/navbar.css"/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;500;600" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+
+
+<link rel="icon" type="image/png" href="/assets/images/index.png" />
+
+
+<link rel="stylesheet" href="/assets/css/style.css"/>
+
+    
+<meta name="description" content="Moneyballing T20 Cricket" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/assets/css/layouts/single.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/sidebar.css">
+
+
+    
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+  
+
+
+  
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <a class="navbar-brand" href="/">
+      AMIT PHADKE</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+      
+      <li id="nav-item"><a href="https://amitp13.github.io/#projects" data-filter="all" class="nav-link">All Projects</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <img src="/assets/images/index.png" class="d-none" id="main-logo">
+  <img src="/assets/images/index.png" class="d-none" id="inverted-logo">
+</nav>
+
+
+
+      
+      
+
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(https://amitp13.github.io/images/projects/beer.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        
+
+        <div class="title">
+          <h1>Moneyballing T20 Cricket</h1>
+        </div>
+
+        <div class="post-content" id="post-content">
+          <h4 id="introduction">Introduction</h4>
+<p>In 2002 Oakland Athletics' general manager Billy Beane and executive Paul DePodesta changed the game of baseball. They achieved this by using math and statistics. They built a team with fairly low valued players. However, These players had high stats that pointed towards more wins. Many doubted their model, but by the end of the season the Oakland Athletics went on to win a 103 games that season and won 20 consecutive games breaking the famous New York Yankees record.</p>
+<p>What Moneyball did, allowed the sports teams to evaluate the players and the game from a mathematical point of view. This project will attempt to apply Beane and DePodesta linear regression roadmap on the gentleman&rsquo;s game of cricket. Since T20(20 over games) is the fastest among the 3 formats of cricket, we will be looking at T20 games for this applications.</p>
+<h4 id="1-data-collection">1. Data Collection</h4>
+<p><a href="http://www.howstat.com">www.howstat.com</a> is a great publicly available website that provides a scorecards and summary datasets. The data is scraped using selenium and python script to get yearly season stats for each team into CSV files.</p>
+<p>A great resource for getting detailed match report was cricksheet.org. cricksheet saves a ball-by-ball match scorecard into a Yaml file. With Yaml parsing in Python, the data was saved in SQL database. With the help of a few SQL queries we got a dataset that can be merged with the howstat dataset.</p>
+<h4 id="2-dataset">2. Dataset</h4>
+<p>The final dataset consists of the yearly performance of a team including runs, number of wins, number of wickets conceded, number of sixes, and if the team made it to the playoffs or not. The teams are National teams and domestic teams across 3 domestic leagues. For our analysis we have over 108 records and 34 variables</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Team</td>
+<td>Team Name</td>
+</tr>
+<tr>
+<td>Mat</td>
+<td>Matches Played</td>
+</tr>
+<tr>
+<td>Won</td>
+<td>Matches Won</td>
+</tr>
+<tr>
+<td>Lost</td>
+<td>Matches Lost</td>
+</tr>
+<tr>
+<td>Tied</td>
+<td>Matches tied</td>
+</tr>
+<tr>
+<td>N/R</td>
+<td>Matches with no result</td>
+</tr>
+<tr>
+<td>Net R/R</td>
+<td>Net run rate</td>
+</tr>
+<tr>
+<td>Runs scored</td>
+<td>Runs Scored in a season</td>
+</tr>
+<tr>
+<td>deliveries faced</td>
+<td>Deliveries faced in a season</td>
+</tr>
+<tr>
+<td>Runs allowed</td>
+<td>Runs allowed faced in a season</td>
+</tr>
+<tr>
+<td>deliveries bowled</td>
+<td>deliveries bowled in a season</td>
+</tr>
+<tr>
+<td>Season</td>
+<td>Season Year</td>
+</tr>
+<tr>
+<td>playoffs</td>
+<td>did the team make the playoffs that year.</td>
+</tr>
+<tr>
+<td>singles_allowed</td>
+<td>singles allowed</td>
+</tr>
+<tr>
+<td>doubles_allowed</td>
+<td>two runs in one ball allowed</td>
+</tr>
+<tr>
+<td>triples_allowed</td>
+<td>three runs in one ball allowed</td>
+</tr>
+<tr>
+<td>fours_allowed</td>
+<td>ground boundries allowed. 4 runs in one ball.</td>
+</tr>
+<tr>
+<td>sixers_allowed</td>
+<td>no bounce boundries allowed. six runs in one ball</td>
+</tr>
+<tr>
+<td>singles</td>
+<td>singles taken</td>
+</tr>
+<tr>
+<td>doubles</td>
+<td>twos taken</td>
+</tr>
+<tr>
+<td>triples</td>
+<td>threes taken</td>
+</tr>
+<tr>
+<td>fours</td>
+<td>fours taken</td>
+</tr>
+<tr>
+<td>sixers</td>
+<td>sixes scored</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3-data-cleaning">3. Data Cleaning</h4>
+<p>Before we start to analyze and explore our data, lets polish it by cleaning any null values, unhandled datatypes and raw unprocessed data.</p>
+<p>First lets import relevant libraries</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">library</span>(ggplot2)
+</code></pre></div><p>Here&rsquo;s our data at a glance.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R">data <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">read.csv</span>(<span style="color:#e6db74">&#34;C:\\Users\\phadk\\Desktop\\Work\\projects\\t20\\moneyballing\\playoff.csv&#34;</span>)
+<span style="color:#a6e22e">head</span>(data)
+</code></pre></div><table>
+<thead><tr><th scope=col>X</th><th scope=col>Team</th><th scope=col>Mat</th><th scope=col>Won</th><th scope=col>Lost</th><th scope=col>Tied</th><th scope=col>N.R</th><th scope=col>Net.R.R</th><th scope=col>Runs.scored</th><th scope=col>deliveries.faced</th><th scope=col>...</th><th scope=col>singles_allowed</th><th scope=col>doubles_allowed</th><th scope=col>triples_allowed</th><th scope=col>fours_allowed</th><th scope=col>sixers_allowed</th><th scope=col>singles</th><th scope=col>doubles</th><th scope=col>triples</th><th scope=col>fours</th><th scope=col>sixers</th></tr></thead>
+<tbody>
+	<tr><td>0                    </td><td>Rajasthan Royals     </td><td>14                   </td><td>11                   </td><td>3                    </td><td>0                    </td><td>0                    </td><td> 0.632               </td><td>2245                 </td><td>1567                 </td><td>...                  </td><td>604                  </td><td>218                  </td><td>24                   </td><td>836                  </td><td>510                  </td><td>590                  </td><td>224                  </td><td>12                   </td><td>960                  </td><td>450                  </td></tr>
+	<tr><td>1                    </td><td>Kings XI Punjab      </td><td>14                   </td><td>10                   </td><td>4                    </td><td>0                    </td><td>0                    </td><td> 0.509               </td><td>2352                 </td><td>1559                 </td><td>...                  </td><td>538                  </td><td>226                  </td><td> 9                   </td><td>856                  </td><td>534                  </td><td>577                  </td><td>182                  </td><td>30                   </td><td>880                  </td><td>558                  </td></tr>
+	<tr><td>2                    </td><td>Chennai Super Kings  </td><td>14                   </td><td> 8                   </td><td>6                    </td><td>0                    </td><td>0                    </td><td>-0.192               </td><td>2241                 </td><td>1586                 </td><td>...                  </td><td>648                  </td><td>222                  </td><td>21                   </td><td>888                  </td><td>516                  </td><td>598                  </td><td>218                  </td><td>21                   </td><td>924                  </td><td>492                  </td></tr>
+	<tr><td>3                    </td><td>Delhi Capitals       </td><td>14                   </td><td> 7                   </td><td>6                    </td><td>0                    </td><td>1                    </td><td> 0.342               </td><td>2001                 </td><td>1400                 </td><td>...                  </td><td>560                  </td><td>140                  </td><td>12                   </td><td>744                  </td><td>456                  </td><td>548                  </td><td>206                  </td><td>12                   </td><td>836                  </td><td>318                  </td></tr>
+	<tr><td>4                    </td><td>Mumbai Indians       </td><td>14                   </td><td> 7                   </td><td>7                    </td><td>0                    </td><td>0                    </td><td> 0.570               </td><td>2080                 </td><td>1495                 </td><td>...                  </td><td>570                  </td><td>164                  </td><td>12                   </td><td>816                  </td><td>396                  </td><td>491                  </td><td>134                  </td><td>18                   </td><td>788                  </td><td>456                  </td></tr>
+	<tr><td>5                    </td><td>Kolkata Knight Riders</td><td>14                   </td><td> 6                   </td><td>7                    </td><td>0                    </td><td>1                    </td><td>-0.147               </td><td>1845                 </td><td>1456                 </td><td>...                  </td><td>433                  </td><td>130                  </td><td> 6                   </td><td>704                  </td><td>288                  </td><td>515                  </td><td>174                  </td><td> 3                   </td><td>648                  </td><td>456                  </td></tr>
+</tbody>
+</table>
+<p>Shape of our data</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">dim</span>(data)
+</code></pre></div><ol class=list-inline>
+	<li>108</li>
+	<li>28</li>
+</ol>
+<p>Summary of the dataset.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">summary</span>(data)
+</code></pre></div><pre><code>       X                                   Team         Mat       
+ Min.   :  0.00   Delhi Capitals             :13   Min.   :14.00  
+ 1st Qu.: 26.75   Kings XI Punjab            :13   1st Qu.:14.00  
+ Median : 53.50   Kolkata Knight Riders      :13   Median :14.00  
+ Mean   : 53.50   Mumbai Indians             :13   Mean   :14.33  
+ 3rd Qu.: 80.25   Royal Challengers Bangalore:13   3rd Qu.:14.00  
+ Max.   :107.00   Chennai Super Kings        :11   Max.   :16.00  
+                  (Other)                    :32                  
+      Won              Lost             Tied        N.R        
+ Min.   : 2.000   Min.   : 3.000   Min.   :0   Min.   :0.0000  
+ 1st Qu.: 6.000   1st Qu.: 5.000   1st Qu.:0   1st Qu.:0.0000  
+ Median : 7.000   Median : 7.000   Median :0   Median :0.0000  
+ Mean   : 7.056   Mean   : 7.056   Mean   :0   Mean   :0.2222  
+ 3rd Qu.: 9.000   3rd Qu.: 8.000   3rd Qu.:0   3rd Qu.:0.0000  
+ Max.   :11.000   Max.   :13.000   Max.   :0   Max.   :2.0000  
+
+    Net.R.R            Runs.scored   deliveries.faced       SR       
+ Min.   :-1.4360000   Min.   :1687   Min.   :1147     Min.   :1.111  
+ 1st Qu.:-0.3437500   1st Qu.:2082   1st Qu.:1554     1st Qu.:1.286  
+ Median : 0.0090000   Median :2192   Median :1623     Median :1.342  
+ Mean   : 0.0005648   Mean   :2184   Mean   :1624     Mean   :1.347  
+ 3rd Qu.: 0.3230000   3rd Qu.:2315   3rd Qu.:1658     3rd Qu.:1.405  
+ Max.   : 1.1070000   Max.   :2613   Max.   :1916     Max.   :1.611  
+
+  Runs.allowed  deliveries.bowled      OPSR           Season    
+ Min.   :1693   Min.   :1220      Min.   :1.163   Min.   :2008  
+ 1st Qu.:2078   1st Qu.:1548      1st Qu.:1.283   1st Qu.:2011  
+ Median :2192   Median :1622      Median :1.346   Median :2014  
+ Mean   :2184   Mean   :1624      Mean   :1.346   Mean   :2014  
+ 3rd Qu.:2305   3rd Qu.:1665      3rd Qu.:1.407   3rd Qu.:2017  
+ Max.   :2519   Max.   :1890      Max.   :1.555   Max.   :2020  
+
+    playoffs                           bowling_team     season    
+ Min.   :0.0000   Delhi Capitals             :13    Min.   :2008  
+ 1st Qu.:0.0000   Kings XI Punjab            :13    1st Qu.:2011  
+ Median :0.0000   Kolkata Knight Riders      :13    Median :2014  
+ Mean   :0.4815   Mumbai Indians             :13    Mean   :2014  
+ 3rd Qu.:1.0000   Royal Challengers Bangalore:13    3rd Qu.:2017  
+ Max.   :1.0000   Chennai Super Kings        :11    Max.   :2020  
+                  (Other)                    :32                  
+ singles_allowed doubles_allowed triples_allowed fours_allowed sixers_allowed
+ Min.   :433.0   Min.   :130.0   Min.   : 3.00   Min.   :556   Min.   :282.0  
+ 1st Qu.:588.0   1st Qu.:199.5   1st Qu.:11.25   1st Qu.:704   1st Qu.:402.0  
+ Median :628.5   Median :219.0   Median :15.00   Median :764   Median :462.0  
+ Mean   :627.0   Mean   :217.5   Mean   :16.31   Mean   :766   Mean   :463.6  
+ 3rd Qu.:666.2   3rd Qu.:238.5   3rd Qu.:21.00   3rd Qu.:833   3rd Qu.:510.0  
+ Max.   :791.0   Max.   :318.0   Max.   :39.00   Max.   :944   Max.   :768.0  
+
+    singles         doubles         triples          fours         sixers     
+ Min.   :453.0   Min.   :130.0   Min.   : 3.00   Min.   :532   Min.   :252.0  
+ 1st Qu.:589.8   1st Qu.:186.0   1st Qu.: 9.00   1st Qu.:715   1st Qu.:378.0  
+ Median :628.5   Median :213.0   Median :15.00   Median :758   Median :450.0  
+ Mean   :627.0   Mean   :217.5   Mean   :16.31   Mean   :766   Mean   :463.6  
+ 3rd Qu.:669.2   3rd Qu.:248.0   3rd Qu.:24.00   3rd Qu.:832   3rd Qu.:538.5  
+ Max.   :809.0   Max.   :340.0   Max.   :42.00   Max.   :984   Max.   :858.0  
+</code></pre>
+<p>No of Null values</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">colSums</span>(<span style="color:#a6e22e">is.na</span>(data))
+</code></pre></div><dl class=dl-horizontal>
+	<dt>X</dt>
+		<dd>0</dd>
+	<dt>Team</dt>
+		<dd>0</dd>
+	<dt>Mat</dt>
+		<dd>0</dd>
+	<dt>Won</dt>
+		<dd>0</dd>
+	<dt>Lost</dt>
+		<dd>0</dd>
+	<dt>Tied</dt>
+		<dd>0</dd>
+	<dt>N.R</dt>
+		<dd>0</dd>
+	<dt>Net.R.R</dt>
+		<dd>0</dd>
+	<dt>Runs.scored</dt>
+		<dd>0</dd>
+	<dt>deliveries.faced</dt>
+		<dd>0</dd>
+	<dt>SR</dt>
+		<dd>0</dd>
+	<dt>Runs.allowed</dt>
+		<dd>0</dd>
+	<dt>deliveries.bowled</dt>
+		<dd>0</dd>
+	<dt>OPSR</dt>
+		<dd>0</dd>
+	<dt>Season</dt>
+		<dd>0</dd>
+	<dt>playoffs</dt>
+		<dd>0</dd>
+	<dt>bowling_team</dt>
+		<dd>0</dd>
+	<dt>season</dt>
+		<dd>0</dd>
+	<dt>singles_allowed</dt>
+		<dd>0</dd>
+	<dt>doubles_allowed</dt>
+		<dd>0</dd>
+	<dt>triples_allowed</dt>
+		<dd>0</dd>
+	<dt>fours_allowed</dt>
+		<dd>0</dd>
+	<dt>sixers_allowed</dt>
+		<dd>0</dd>
+	<dt>singles</dt>
+		<dd>0</dd>
+	<dt>doubles</dt>
+		<dd>0</dd>
+	<dt>triples</dt>
+		<dd>0</dd>
+	<dt>fours</dt>
+		<dd>0</dd>
+	<dt>sixers</dt>
+		<dd>0</dd>
+</dl>
+<p>It seems our data is pretty clean. Also most of the values are integers as we want. We can now proceed with our analysis.</p>
+<h4 id="4-setting-up-baselines">4. Setting up Baselines</h4>
+<p>For every good analysis one of the most crucial thing is asking the right questions. With a sports analytics problem the most obvious question is:</p>
+<p><b> What is the goal of a team? </b></p>
+<p>The first thing that Beane and DePodesta wanted to know was how to they can make it to the playoff&rsquo;s. They argued that games at the playoffs are much more unpredictable and hence hard to quantify. In the case of IPL there are only 3 playoff matches each season hence that is much smaller dataset to analyze on. So the goal of the team leads us to the next question we want to ask is</p>
+<p><b> How does a team make it to the playoffs? </b></p>
+<p>Easy answer. Win more games. Now the final question before we start analysis,</p>
+<h5 id="how-many-wins-does-it-take-to-make-it-to-the-playoffs">How many wins does it take to make it to the playoffs?</h5>
+<p>To answer this question we will build a scatter plot if a team made it to playoff against number of wins.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R">m <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ggplot</span>(data, <span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Won,
+                      y <span style="color:#f92672">=</span> Team,
+                      color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
+<span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>)
+
+m <span style="color:#f92672">+</span> <span style="color:#a6e22e">geom_vline</span>(<span style="color:#a6e22e">aes</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">7.9</span>), color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dashed&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">xlab</span>(<span style="color:#e6db74">&#34;Wins&#34;</span>)
+</code></pre></div><p><img src="mb_10_0.png" alt="png"></p>
+<p>The following graph shows us that when number of is more than 8 those teams our possibly making it to the playoffs.</p>
+<p>Now our goal is much more clear. A team needs to win atleast 8 games out of 14 games to make it to the playoffs. Now we need ask how does a team win 7 games out of the 14 games in the league games.</p>
+<p>Here DePodesta comes to our rescue. He argued that in baseball wins had a relationship with the difference between runs scored and runs allowed. Lets test if this is is the issue for IPL.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R">data<span style="color:#f92672">$</span>RD <span style="color:#f92672">&lt;-</span> data<span style="color:#f92672">$</span>Runs.scored <span style="color:#f92672">-</span> data<span style="color:#f92672">$</span>Runs.allowed
+
+<span style="color:#a6e22e">ggplot</span>(data, <span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> RD,
+                y <span style="color:#f92672">=</span> Won,
+                color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
+     <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>)
+</code></pre></div><p><img src="mb_13_0.png" alt="png"></p>
+<p>The following graph shows that teams that made the playoffs(marked in red), had higher run difference. This validates our assumption that runs diffrential is corelated with wins. Next we will use linear regression to predict number of wins based on run diffrential.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R">winsReg <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">lm</span>(Won <span style="color:#f92672">~</span> RD, data <span style="color:#f92672">=</span> data)
+winsReg
+</code></pre></div><pre><code>Call:
+lm(formula = Won ~ RD, data = data)
+
+Coefficients:
+(Intercept)           RD  
+    7.05556      0.01267  
+</code></pre>
+<p>To put this into readable terms our equation is:</p>
+<p>Won  = 7.05556 + 0.01267(RD)</p>
+<p>which also reads as:</p>
+<p>RD = (Won - 7.05556)/0.01267</p>
+<p>According to our previous analysis no of wins to get playoffs is 7. Thus our equation becomes:</p>
+<p>RD = (8-7.05556)/0.01267 <br>
+RD = 74.5414365 <br>
+RD ≈ 75 <br></p>
+<p>So it seems that a team has high chance of winning if the difference between runs is 75. Let validate that graphically.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">ggplot</span>(data, <span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> RD,
+                 y <span style="color:#f92672">=</span> Won,
+                 color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
+     <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>) <span style="color:#f92672">+</span>
+     <span style="color:#a6e22e">geom_vline</span>(<span style="color:#a6e22e">aes</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">75</span>), color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dashed&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><p><img src="mb_17_0.png" alt="png"></p>
+<p>It seems like we can adjust our RD a bit more to include more wins.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#a6e22e">ggplot</span>(data, <span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> RD,
+                 y <span style="color:#f92672">=</span> Won,
+                 color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(playoffs))) <span style="color:#f92672">+</span>
+     <span style="color:#a6e22e">geom_point</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;#000000&#34;</span>, <span style="color:#e6db74">&#34;#FF2D00&#34;</span>), name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Made Playoffs&#34;</span>) <span style="color:#f92672">+</span>
+     <span style="color:#a6e22e">geom_vline</span>(<span style="color:#a6e22e">aes</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">70</span>), color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dashed&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><p><img src="mb_19_0.png" alt="png"></p>
+<p>70 seems like a good threshold to set our further analysis. Which brings to our fourth and final question :</p>
+<p><b> How can a team score 70 more runs than they allow?? </b></p>
+
+        </div>
+
+        
+        
+          
+        
+
+        
+      <hr />
+        <div class="row next-prev-navigator">
+
+
+  
+
+  
+    
+      
+      <div class="col-md-6 previous-article">
+        <a href="/projects/income_analysis/" class="btn btn-outline-info">
+          <span><i class="fas fa-chevron-circle-left"></i> Prev</span>
+          <br />
+          <span>Income analysis of adults in the USA</span>
+        </a>
+      </div>
+      
+    
+    
+      
+        
+        
+          
+              
+          
+        
+        <div class="col-md-6 next-article">
+          <a href="/projects/song-recomender/" class="btn btn-outline-info">
+            <span>Next <i class="fas fa-chevron-circle-right"></i></span>
+            <br />
+            <span>Song Recomendation System using Spotify Data</span>
+          </a>
+        </div>
+      
+    
+  
+
+  
+
+  
+
+  
+
+</div>
+
+      <hr />
+      
+      
+          <div id="disqus_thread"></div>
+<script type="text/javascript">
+  (function () {
+    
+    
+    if (window.location.hostname == "localhost") return;
+
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    var disqus_shortname = "does-not-exist";
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+
+      
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section" id="toc-section">
+    
+    <div class="toc-holder">
+      <h5 class="text-center pl-3">Table of Contents</h5>
+      <hr>
+      <div class="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#1-data-collection">1. Data Collection</a></li>
+            <li><a href="#2-dataset">2. Dataset</a></li>
+            <li><a href="#3-data-cleaning">3. Data Cleaning</a></li>
+            <li><a href="#4-setting-up-baselines">4. Setting up Baselines</a>
+              <ul>
+                <li><a href="#how-many-wins-does-it-take-to-make-it-to-the-playoffs">How many wins does it take to make it to the playoffs?</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+
+  
+
+
+
+
+  
+
+
+
+
+  
+  
+    
+  
+
+
+<footer class="container-fluid text-center align-content-center footer pb-2">
+  <div class="container pt-5">
+    <div class="row text-left">
+      <div class="col-md-4 col-sm-12">
+        <h5>Navigation</h5>
+        
+        <ul>
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#about">About</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#skills">Skills</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#projects">Projects</a>
+              </li>
+            
+        </ul>
+        
+
+      </div>
+      
+      <div class="col-md-4 col-sm-12">
+        <h5>Contact me:</h5>
+        <ul>
+          
+          <li><span>Email: </span> <span>phadke.amit03@gmail.com</span></li>
+          
+          <li><span>Phone: </span> <span>&#43;1 862-316-3994</span></li>
+          
+        </ul>
+      </div>
+      
+      
+    </div>
+  </div>
+  <hr />
+  <div class="container">
+    <div class="row text-left">
+       <div class="col-md-4">
+        
+        Template by Toha
+      </div>
+      <div class="col-md-4 text-center">© 2020 Copyright.</div>
+      <div class="col-md-4 text-right">
+        <a id="hugo" href="https://gohugo.io/">Powered by
+        <img
+          src="/assets/images/hugo-logo-wide.svg"
+          alt="Hugo Logo"
+          height="18"
+        />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/assets/js/jquery-3.4.1.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/main.js"></script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/assets/js/single.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </body>
+</html>

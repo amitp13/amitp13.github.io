@@ -8,21 +8,21 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 08 Jun 2020 08:06:25 +0600</lastBuildDate><atom:link href="https://amitp13.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Beer Quality Prediction</title>
-      <link>https://amitp13.github.io/projects/beer_reviews/</link>
-      <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
-      
-      <guid>https://amitp13.github.io/projects/beer_reviews/</guid>
-      <description>Introduction The following jupyter notebook is an analysis of more 50,000 beers across the world and how users have reviewed them based on aroma, taste, appearance, palate, etc. We will first look at the different subtypes of ratings and how much correlation do they have to the overall rating and which are the strongest indicators of high rated beer. Secondly we will look at the relation between ABV(alcohol level by volume) and ratings.</description>
-    </item>
-    
-    <item>
       <title>Income analysis of adults in the USA</title>
       <link>https://amitp13.github.io/projects/income_analysis/</link>
       <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
       
       <guid>https://amitp13.github.io/projects/income_analysis/</guid>
       <description>Introduction The following jupyter notebook is an analysis into the Database for Adult Income in the United States. The Us Adult income dataset was extracted by Barry Becker from the 1994 US Census Database. The data set consists of anonymous information such as occupation, age, native country, race, capital gain, capital loss, education, work class and more. Each row is labelled as either having a salary greater than &amp;ldquo;&amp;gt;50K&amp;rdquo; or &amp;ldquo;&amp;lt;=50K&amp;rdquo;.</description>
+    </item>
+    
+    <item>
+      <title>Moneyballing T20 Cricket</title>
+      <link>https://amitp13.github.io/projects/moneyball/</link>
+      <pubDate>Mon, 08 Jun 2020 08:06:25 +0600</pubDate>
+      
+      <guid>https://amitp13.github.io/projects/moneyball/</guid>
+      <description>Introduction In 2002 Oakland Athletics&#39; general manager Billy Beane and executive Paul DePodesta changed the game of baseball. They achieved this by using math and statistics. They built a team with fairly low valued players. However, These players had high stats that pointed towards more wins. Many doubted their model, but by the end of the season the Oakland Athletics went on to win a 103 games that season and won 20 consecutive games breaking the famous New York Yankees record.</description>
     </item>
     
     <item>
