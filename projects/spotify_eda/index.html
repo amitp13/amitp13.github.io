@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Anatomy of a song</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/assets/css/layouts/main.css"/>
+<link rel="stylesheet" href="/assets/css/style.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/navbar.css"/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;500;600" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+
+
+<link rel="icon" type="image/png" href="/images/logo.png" />
+
+
+<link rel="stylesheet" href="/assets/css/style.css"/>
+
+    
+<meta name="description" content="Anatomy of a song" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/assets/css/layouts/single.css"/>
+<link rel="stylesheet" href="/assets/css/navigators/sidebar.css">
+
+
+    
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+  
+
+
+  
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <a class="navbar-brand" href="/">
+      AMIT PHADKE</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+      
+      <li id="nav-item"><a href="https://amitp13.github.io/#projects" data-filter="all" class="nav-link">All Projects</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <img src="/images/logo.png" class="d-none" id="main-logo">
+  <img src="/images/logo.png" class="d-none" id="inverted-logo">
+</nav>
+
+
+
+      
+      
+
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(https://amitp13.github.io/images/projects/spotify.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        
+
+        <div class="title">
+          <h1>Anatomy of a song</h1>
+        </div>
+
+        <div class="post-content" id="post-content">
+          <h2><center> Analyzing Billboard Hot 100 from 1960 to 2020 </center></h2>
+<h3 id="introduction">Introduction</h3>
+<p>From the first week of December to the final week of November, Billboard runs a year-end chart giving us the highest performing songs for a given year. The year-end charts are calculated by a very straightforward cumulative total of yearlong sales, streaming, and airplay points which gives a more accurate picture of any given year&rsquo;s most popular tracks. Thanks to Spotify&rsquo;s API we can get data for these all these songs and analyze them to get a clear picture of an anatomy of a popular song.</p>
+<p>A small caveat before we begin, Billboard only accounts for sales and streaming in the US. So these songs are popular with respect to only the United States of America. Also as a musician myself, I cannot stress enough the subjectivity of music. Every person in this world has a right to love any type of music and this list only reflects songs which made more sales and were popular in broader spectrum.</p>
+<h3 id="methodology">Methodology</h3>
+<h4 id="data-collection">Data Collection</h4>
+<p>To collect the data, Spotify has been generous enough to provide us developers with a robust API. So I built a wrapper class in Python that would get me songs, albums, playlists and audio properties of the songs from the API.</p>
+<p>First step was to collect the playlist ids, for the playlists on spotify which had a complied list of year-end top 100 songs. Using those ids, I got the respective song ids of every song in that playlist. Second step was to use these song ids to extract audio properties and metadata for each song in the playlists.</p>
+<p>Finally we have a data with about 7000 songs, and 19 variables across 50 years.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#importing all necessary libraries</span>
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> plotly.express <span style="color:#f92672">as</span> px
+<span style="color:#f92672">import</span> plotly.figure_factory <span style="color:#f92672">as</span> ff
+<span style="color:#f92672">from</span> pandas.core.groupby.groupby <span style="color:#f92672">import</span> GroupBy
+<span style="color:#f92672">from</span> plotly.subplots <span style="color:#f92672">import</span> make_subplots
+<span style="color:#f92672">import</span> plotly.graph_objects <span style="color:#f92672">as</span> go
+<span style="color:#f92672">from</span> plotly.offline <span style="color:#f92672">import</span> download_plotlyjs, init_notebook_mode, plot, iplot
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;C:\Users\phadk\Desktop\Work\projects\portfolio\Spotify_eda\data.csv&#34;</span>)
+data <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop_duplicates(subset<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;song_id&#39;</span>, <span style="color:#e6db74">&#39;billboard_year&#39;</span>])
+data<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">5</span>)
+</code></pre></div><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>billboard_year</th>
+      <th>song_id</th>
+      <th>name</th>
+      <th>artist</th>
+      <th>release_date</th>
+      <th>popularity</th>
+      <th>danceability</th>
+      <th>energy</th>
+      <th>key</th>
+      <th>loudness</th>
+      <th>mode</th>
+      <th>speechiness</th>
+      <th>acousticness</th>
+      <th>instrumentalness</th>
+      <th>liveness</th>
+      <th>valence</th>
+      <th>tempo</th>
+      <th>duration_ms</th>
+      <th>time_signature</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020</td>
+      <td>0sf12qNH5qcw8qpgymFOqD</td>
+      <td>Blinding Lights</td>
+      <td>The Weeknd</td>
+      <td>11/29/2019</td>
+      <td>26</td>
+      <td>0.513</td>
+      <td>0.796</td>
+      <td>1.0</td>
+      <td>-4.075</td>
+      <td>1.0</td>
+      <td>0.0629</td>
+      <td>0.00147</td>
+      <td>0.000209</td>
+      <td>0.0938</td>
+      <td>0.345</td>
+      <td>171.017</td>
+      <td>201573.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020</td>
+      <td>21jGcNKet2qwijlDFuPiPb</td>
+      <td>Circles</td>
+      <td>Post Malone</td>
+      <td>9/6/2019</td>
+      <td>92</td>
+      <td>0.695</td>
+      <td>0.762</td>
+      <td>0.0</td>
+      <td>-3.497</td>
+      <td>1.0</td>
+      <td>0.0395</td>
+      <td>0.19200</td>
+      <td>0.002440</td>
+      <td>0.0863</td>
+      <td>0.553</td>
+      <td>120.042</td>
+      <td>215280.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020</td>
+      <td>0nbXyq5TXYPCO7pr3N8S4I</td>
+      <td>The Box</td>
+      <td>Roddy Ricch</td>
+      <td>12/6/2019</td>
+      <td>92</td>
+      <td>0.896</td>
+      <td>0.586</td>
+      <td>10.0</td>
+      <td>-6.687</td>
+      <td>0.0</td>
+      <td>0.0559</td>
+      <td>0.10400</td>
+      <td>0.000000</td>
+      <td>0.7900</td>
+      <td>0.642</td>
+      <td>116.971</td>
+      <td>196653.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020</td>
+      <td>6WrI0LAC5M1Rw2MnX2ZvEg</td>
+      <td>Don't Start Now</td>
+      <td>Dua Lipa</td>
+      <td>10/31/2019</td>
+      <td>88</td>
+      <td>0.794</td>
+      <td>0.793</td>
+      <td>11.0</td>
+      <td>-4.521</td>
+      <td>0.0</td>
+      <td>0.0842</td>
+      <td>0.01250</td>
+      <td>0.000000</td>
+      <td>0.0952</td>
+      <td>0.677</td>
+      <td>123.941</td>
+      <td>183290.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2020</td>
+      <td>7ytR5pFWmSjzHJIeQkgog4</td>
+      <td>ROCKSTAR (feat. Roddy Ricch)</td>
+      <td>DaBaby</td>
+      <td>4/17/2020</td>
+      <td>94</td>
+      <td>0.746</td>
+      <td>0.690</td>
+      <td>11.0</td>
+      <td>-7.956</td>
+      <td>1.0</td>
+      <td>0.1640</td>
+      <td>0.24700</td>
+      <td>0.000000</td>
+      <td>0.1010</td>
+      <td>0.497</td>
+      <td>89.977</td>
+      <td>181733.0</td>
+      <td>4.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<h4 id="exploratory-data-analysis">Exploratory Data Analysis</h4>
+<p>The core of any analysis projects lies in asking the right questions. Before I collected the data these were the few questions that I hoped to answer at the end of the notebook.</p>
+<p><b><i> 1. How long does an artist stay relevant or popular? </b></i></p>
+<p>In music we have terms called influential artists or timeless performers. Artists like The Beatles, Michael Jackson, Madonna, Tupac Shakur and many more are still relevant and still loved by the people today. Obviously most of these artists don&rsquo;t stay on billboard chart forever as sales go down as other artists take over. But to stay on billboard charts for years on speaks to how much an artist can stay popular across generations.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">top_artists <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#34;artist&#34;</span>])<span style="color:#f92672">.</span>size()<span style="color:#f92672">.</span>reset_index(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Count&#34;</span>)<span style="color:#f92672">.</span>sort_values(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Count&#39;</span>,ascending<span style="color:#f92672">=</span>False)<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">50</span>)
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>))
+sns<span style="color:#f92672">.</span>barplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Count&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;artist&#34;</span>, data<span style="color:#f92672">=</span>top_artists,palette<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Blues_d&#34;</span>)
+</code></pre></div><p><img src="/images/projects/sp_0.png" alt="png"></p>
+<p>We see that after we start going towards right of the chart, every artist same almost the same amount of songs making the billboard list but the artists at the left have put out a considerable amount of singles every year. But to understand their true influence on the industry we must look also look at for how many years have they consistently dominated the charts.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">top_25 <span style="color:#f92672">=</span> data[data[<span style="color:#e6db74">&#39;artist&#39;</span>]<span style="color:#f92672">.</span>isin(list(top_artists[<span style="color:#e6db74">&#39;artist&#39;</span>])[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">25</span>])]
+ctdf<span style="color:#f92672">=</span> top_25<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;artist&#39;</span>)<span style="color:#f92672">.</span>billboard_year<span style="color:#f92672">.</span>agg([<span style="color:#e6db74">&#39;max&#39;</span>,<span style="color:#e6db74">&#39;min&#39;</span>])<span style="color:#f92672">.</span>reset_index()
+ctdf[<span style="color:#e6db74">&#39;min&#39;</span>] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(ctdf[<span style="color:#e6db74">&#39;min&#39;</span>], format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;%Y&#39;</span>)<span style="color:#f92672">.</span>dt<span style="color:#f92672">.</span>year
+ctdf[<span style="color:#e6db74">&#39;max&#39;</span>] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(ctdf[<span style="color:#e6db74">&#39;max&#39;</span>], format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;%Y&#39;</span>)<span style="color:#f92672">.</span>dt<span style="color:#f92672">.</span>year
+ctdf <span style="color:#f92672">=</span> ctdf<span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;artist&#34;</span>: <span style="color:#e6db74">&#34;Task&#34;</span>, <span style="color:#e6db74">&#34;min&#34;</span>: <span style="color:#e6db74">&#34;Start&#34;</span>,<span style="color:#e6db74">&#34;max&#34;</span>:<span style="color:#e6db74">&#34;Finish&#34;</span>})
+fig <span style="color:#f92672">=</span> ff<span style="color:#f92672">.</span>create_gantt(ctdf)
+iplot(fig)
+</code></pre></div><p><img src="/images/projects/sp_11.JPG" alt="png"></p>
+<p>One important conclusion from these graph proves that having most charting singles does not necessarily correlate to career longevity. For example Michael Jackson ruled the chart from 1970 to early 2014. So how did the king of pop span a successful career for almost 4 decades? was it only his brand name, or did he always keep evolving his music style, with current trends or is there a secret formula that almost always work, which brings us to my next question.</p>
+<p><b><i> Do the top charting songs change according to time, or have common elements? </b></i></p>
+<p>All the songs in our dataset had certain amount of influence over sales, popularity among the people and positive praise from the critics. While music is subjective to the listener there are a few elements in music that define its greatness. Another very important factor is current trend. While rock and roll was the talk of the town in the 60s, Hip hop and rap ruled the charts 40 years later with almost no rock &amp; roll track on the charts. We can do this with looking at audio properties of a songs, Lets start by 4 factor that drive the songs personality the most.</p>
+<ol>
+<li>Danceability : Describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.</li>
+</ol>
+<blockquote>
+<p>Think : Sexy back by Justin Timberlake or almost any song by James Brown.</p>
+</blockquote>
+<ol start="2">
+<li>Acousticness: A measure from 0.0 to 1.0 of whether the track has acoustic elements.</li>
+</ol>
+<blockquote>
+<p>Think : Cant help falling in love with you by Elvis Presley</p>
+</blockquote>
+<ol start="3">
+<li>Energy: Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.</li>
+</ol>
+<blockquote>
+<p>Think of how much energy artists like Spice girls, Prince, Bon Jovi or Michael Jackson bring in their performances.</p>
+</blockquote>
+<ol start="4">
+<li>Instrumentalness: Predicts whether a track contains no vocals. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content.</li>
+</ol>
+<blockquote>
+<p>Examples like Sir Elton John, or Ludwig van Beethoven or Chopin</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data1 <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;billboard_year&#39;</span>, group_keys<span style="color:#f92672">=</span>False)<span style="color:#f92672">.</span>apply(pd<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>sample, frac<span style="color:#f92672">=.</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>lmplot(data<span style="color:#f92672">=</span>data1,x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;billboard_year&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;danceability&#34;</span>,palette<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rocket&#34;</span>,height<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+g<span style="color:#f92672">.</span>fig<span style="color:#f92672">.</span>set_size_inches(<span style="color:#ae81ff">15</span>,<span style="color:#ae81ff">5</span>)
+</code></pre></div><p><img src="/images/projects/sp_1.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>lmplot(
+    data<span style="color:#f92672">=</span>data1,
+    x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;billboard_year&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;acousticness&#34;</span>,
+    height<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+)
+g<span style="color:#f92672">.</span>fig<span style="color:#f92672">.</span>set_size_inches(<span style="color:#ae81ff">15</span>,<span style="color:#ae81ff">5</span>)
+</code></pre></div><p><img src="/images/projects/sp_2.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>lmplot(
+    data<span style="color:#f92672">=</span>data1,
+    x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;billboard_year&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;instrumentalness&#34;</span>,
+    height<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+)
+g<span style="color:#f92672">.</span>fig<span style="color:#f92672">.</span>set_size_inches(<span style="color:#ae81ff">15</span>,<span style="color:#ae81ff">5</span>)
+</code></pre></div><p><img src="/images/projects/sp_3.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>lmplot(
+    data<span style="color:#f92672">=</span>data1,
+    x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;billboard_year&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;energy&#34;</span>,
+    height<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+)
+g<span style="color:#f92672">.</span>fig<span style="color:#f92672">.</span>set_size_inches(<span style="color:#ae81ff">15</span>,<span style="color:#ae81ff">5</span>)
+</code></pre></div><p><img src="/images/projects/sp_4.png" alt="png"></p>
+<p>In these scatter plots we see danceability and energy has had steady growth while acousticness has had a sharp decline. Another thing we notice is that instrumentalness is consistently low. Let&rsquo;s chart the histogram of all these values to get a better understanding.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">4</span>))
+plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># 1 line, 2 rows, index nr 1 (first position in the subplot)</span>
+plt<span style="color:#f92672">.</span>hist(data[<span style="color:#e6db74">&#39;danceability&#39;</span>])
+plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>)  <span style="color:#75715e"># 1 line, 2 rows, index nr 2 (second position in the subplot)</span>
+plt<span style="color:#f92672">.</span>hist(data[<span style="color:#e6db74">&#39;acousticness&#39;</span>])
+plt<span style="color:#f92672">.</span>show()
+
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">8</span>))
+plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># 1 line, 2 rows, index nr 2 (second position in the subplot)</span>
+plt<span style="color:#f92672">.</span>hist(data[<span style="color:#e6db74">&#39;energy&#39;</span>])
+plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>)  <span style="color:#75715e"># 1 line, 2 rows, index nr 2 (second position in the subplot)</span>
+plt<span style="color:#f92672">.</span>hist(data[<span style="color:#e6db74">&#39;instrumentalness&#39;</span>])
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/images/projects/sp_5.png" alt="png"></p>
+<p><img src="/images/projects/sp_6.png" alt="png"></p>
+<p>This confirms our scatter plots. We see acousticness has very sharp decline. This can attribute to technological advances in sound engineering. Bands in the 60s and early 70s had to rely a lot on their mastery over the instruments but as time passed music production played a vital role in music. When artist saw that the could produce entire songs only with the help studio effects, natural sounds(which contribute to acousticness) reduced. Hence the sharp decline. This new tech can also explain the increase in energy quotient of a track and its danceability. Just look at how hip-hop and EDM music&rsquo;s influence on the early 2000s.</p>
+<p>When comes to instrumentelness its consistently low across all decades hence pointing to possible common element. Now if billboard and spotify were around the 1800s or early 1920s we might just see a different outcome. So sorry, Mr. Bach you are not gonna sell much of those beautiful classical pieces in the 21st century.</p>
+<p>After looking at the properties we would want to look at the duration of song.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data[<span style="color:#e6db74">&#39;duration_min&#39;</span>] <span style="color:#f92672">=</span> data[<span style="color:#e6db74">&#39;duration_ms&#39;</span>]<span style="color:#f92672">/</span><span style="color:#ae81ff">60000</span>
+g <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>jointplot(y<span style="color:#f92672">=</span>data[<span style="color:#e6db74">&#39;duration_min&#39;</span>], x<span style="color:#f92672">=</span>data[<span style="color:#e6db74">&#39;billboard_year&#39;</span>], color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;blue&#34;</span>)
+g<span style="color:#f92672">.</span>fig<span style="color:#f92672">.</span>set_size_inches(<span style="color:#ae81ff">15</span>,<span style="color:#ae81ff">7</span>)
+</code></pre></div><p><img src="/images/projects/sp_12.png" alt="png"></p>
+<p>It is quite clear that all the top charting songs lasted for about 5 minutes irrespective of their release year. So this is definitely a common element between different top track across decades</p>
+<p>Another important factor in decoding the personality of the song is its complexity to the listener. To gauge complexity of a song the time signature variable is a great feature.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">ts <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#34;time_signature&#34;</span>])<span style="color:#f92672">.</span>size()<span style="color:#f92672">.</span>reset_index(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Count&#34;</span>)
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">8</span>))
+sns<span style="color:#f92672">.</span>barplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;time_signature&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Count&#34;</span>, data<span style="color:#f92672">=</span>ts,palette<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;red&#39;</span>,<span style="color:#e6db74">&#39;green&#39;</span>,<span style="color:#e6db74">&#39;blue&#39;</span>,<span style="color:#e6db74">&#39;yellow&#39;</span>])
+</code></pre></div><p><img src="/images/projects/sp_7.png" alt="png"></p>
+<p>It is quite clear the time signature 4/4 is the most used among almost all the songs. Now 4/4 time signature is also the most used in music due to its extreme simplicity for reading, composing and performing music. Due to its natural and common occurrence the human ears can sounds in this time signature much more easily.</p>
+<p>One last factor to analyze commonalities, we will look at mood of the song. A mood of the song can be deciphered using two features :</p>
+<ol>
+<li>
+<p>Mode: Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.</p>
+</li>
+<li>
+<p>Valence: Valence measure the value of positive, The higher the value, the more positive mood for the song.</p>
+</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#pie chart for mode</span>
+mode <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#34;mode&#34;</span>])<span style="color:#f92672">.</span>size()<span style="color:#f92672">.</span>reset_index(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Count&#34;</span>)
+
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">8</span>))
+explode <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.1</span>)  <span style="color:#75715e"># only &#34;explode&#34; the 2nd slice (i.e. &#39;Hogs&#39;)</span>
+plt<span style="color:#f92672">.</span>pie(mode[<span style="color:#e6db74">&#39;Count&#39;</span>], explode<span style="color:#f92672">=</span>explode, labels<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;Minor&#39;</span>,<span style="color:#e6db74">&#39;Major&#39;</span>], autopct<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%1.1f%%</span><span style="color:#e6db74">&#39;</span>,
+        shadow<span style="color:#f92672">=</span>True, startangle<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>)
+plt<span style="color:#f92672">.</span>axis(<span style="color:#e6db74">&#39;equal&#39;</span>)  <span style="color:#75715e"># Equal aspect ratio ensures that pie is drawn as a circle.</span>
+
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/images/projects/sp_8.png" alt="png"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">8</span>))
+plt<span style="color:#f92672">.</span>hist(data[<span style="color:#e6db74">&#39;valence&#39;</span>])
+</code></pre></div><pre><code>(array([130., 326., 469., 582., 635., 742., 737., 811., 838., 798.]),
+ array([0.0376 , 0.13244, 0.22728, 0.32212, 0.41696, 0.5118 , 0.60664,
+        0.70148, 0.79632, 0.89116, 0.986  ]),
+ &lt;a list of 10 Patch objects&gt;)
+</code></pre>
+<p><img src="/images/projects/sp_9.png" alt="png"></p>
+<p>The last two plots suggests that there is no pattern when it comes to the mood of the song but almost 70% of the song are built in a major key. The reason for major chords sounding &ldquo;happy&rdquo; is the something to do with intervals as explained by music theory. Wider intervals are perceived as being brighter than smaller intervals. So major chords with their major 3rd are brighter that minor chords with their minor third. But then if 70% songs have a major chords, why is the valence not distributed more towards higher ranges. That is because of another element in our song, pitch. According to several music theorist and psychologists Lower pitches tend to send more bright and happy. Let&rsquo;s look at our pitch or key variable in a pie chart</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#pie chart for key</span>
+keys <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#34;key&#34;</span>])<span style="color:#f92672">.</span>size()<span style="color:#f92672">.</span>reset_index(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Count&#34;</span>)
+plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">8</span>))
+labels <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;C&#39;</span>,<span style="color:#e6db74">&#39;C#&#39;</span>,<span style="color:#e6db74">&#39;D&#39;</span>,<span style="color:#e6db74">&#39;D#&#39;</span>,<span style="color:#e6db74">&#39;E&#39;</span>,<span style="color:#e6db74">&#39;F&#39;</span>,<span style="color:#e6db74">&#39;F#&#39;</span>,<span style="color:#e6db74">&#39;G&#39;</span>,<span style="color:#e6db74">&#39;G#&#39;</span>,<span style="color:#e6db74">&#39;A&#39;</span>,<span style="color:#e6db74">&#39;A#&#39;</span>,<span style="color:#e6db74">&#39;B&#39;</span>]
+plt<span style="color:#f92672">.</span>pie(keys[<span style="color:#e6db74">&#39;Count&#39;</span>], labels<span style="color:#f92672">=</span>labels, autopct<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%1.1f%%</span><span style="color:#e6db74">&#39;</span>,
+        shadow<span style="color:#f92672">=</span>True, startangle<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>)
+plt<span style="color:#f92672">.</span>axis(<span style="color:#e6db74">&#39;equal&#39;</span>)  <span style="color:#75715e"># Equal aspect ratio ensures that pie is drawn as a circle.</span>
+
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/images/projects/sp_10.png" alt="png"></p>
+<p>Now here we see that all songs are evenly distributed as per their pitches, which explains the incongruency in Mode and valence.</p>
+<h4 id="conclusion">Conclusion</h4>
+<p>While we have only scratched the surface of music analysis, we did see some interesting things with our data that can answer our questions.</p>
+<h5> Commonalities </h5>
+<blockquote>
+<p>Simplicity: With a time signature of 4/4 almost 90% of these songs feel natural to the listener and hence are listened more.</p>
+</blockquote>
+<blockquote>
+<p>Duration : Time is an important factor in songs, to keep the listeners attention for the entire song, a duration below 5 minutes is preferred by almost all artists.</p>
+</blockquote>
+<blockquote>
+<p>Presence of Vocals: If we neglect the outliers in every year, most of the top charting songs, have heavy presence of vocals.</p>
+</blockquote>
+<blockquote>
+<p>The Major lift : Major chords tend to appeal more to listeners due to the bright, happy and uplifting nature and hence are listened to more.</p>
+</blockquote>
+</h5> Trends </h5>
+> Effect of Technology : With advances in sound engineering, composers can rely less on the natural sounds and more on track production effects.
+<blockquote>
+<p>Groove it: All the top songs across tend more towards, higher danceability but the subtle nuances in them speak about how our culture around dance forms has changed.</p>
+</blockquote>
+<p>We see that there are countless external factors that might affect the career of an artist, to stay relevant in the industry and a musician must adapt and evolve to match current competition. This right to change or staying true to a style remains solely with the artist. After all, music is art and it&rsquo;s beauty lies in ears of the beholder</p>
+
+        </div>
+
+        
+        
+          
+        
+
+        
+      <hr />
+        <div class="row next-prev-navigator">
+
+
+  
+    
+    
+      
+        
+        
+        <div class="col-md-12 next-article">
+          <a href="/projects/income_analysis/" class="btn btn-outline-info">
+            <span>Next <i class="fas fa-chevron-circle-right"></i></span>
+            <br />
+            <span>Income analysis of adults in the USA</span>
+          </a>
+        </div>
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+</div>
+
+      <hr />
+      
+      
+          <div id="disqus_thread"></div>
+<script type="text/javascript">
+  (function () {
+    
+    
+    if (window.location.hostname == "localhost") return;
+
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    var disqus_shortname = "does-not-exist";
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+<a href="https://disqus.com/" class="dsq-brlink"
+  >comments powered by <span class="logo-disqus">Disqus</span></a
+>
+
+      
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section" id="toc-section">
+    
+    <div class="toc-holder">
+      <h5 class="text-center pl-3">Table of Contents</h5>
+      <hr>
+      <div class="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#methodology">Methodology</a>
+          <ul>
+            <li><a href="#data-collection">Data Collection</a></li>
+            <li><a href="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+
+  
+
+
+
+
+  
+
+
+
+
+  
+  
+    
+  
+
+
+<footer class="container-fluid text-center align-content-center footer pb-2">
+  <div class="container pt-5">
+    <div class="row text-left">
+      <div class="col-md-4 col-sm-12">
+        <h5>Navigation</h5>
+        
+        <ul>
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#about">About</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#skills">Skills</a>
+              </li>
+            
+            
+              
+              
+                
+              
+              <li class="nav-item">
+                <a class="smooth-scroll" href="#projects">Projects</a>
+              </li>
+            
+        </ul>
+        
+
+      </div>
+      
+      <div class="col-md-4 col-sm-12">
+        <h5>Contact me:</h5>
+        <ul>
+          
+          <li><span>Email: </span> <span>phadke.amit03@gmail.com</span></li>
+          
+          <li><span>Phone: </span> <span>&#43;1 862-316-3994</span></li>
+          
+        </ul>
+      </div>
+      
+      
+    </div>
+  </div>
+  <hr />
+  <div class="container">
+    <div class="row text-left">
+       <div class="col-md-4">
+        
+        Template by Toha
+      </div>
+      <div class="col-md-4 text-center">© 2020 Copyright.</div>
+      <div class="col-md-4 text-right">
+        <a id="hugo" href="https://gohugo.io/">Powered by
+        <img
+          src="/assets/images/hugo-logo-wide.svg"
+          alt="Hugo Logo"
+          height="18"
+        />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="/assets/js/jquery-3.4.1.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/main.js"></script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/assets/js/single.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </body>
+</html>
