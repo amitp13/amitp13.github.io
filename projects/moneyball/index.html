@@ -604,11 +604,11 @@ summary(runsAllowedReg)
 ## Multiple R-squared:  0.8724, Adjusted R-squared:  0.8684
 ## F-statistic: 218.8 on 3 and 96 DF,  p-value: &lt; 2.2e-16
 </code></pre>
+<h4 id="conclusion">Conclusion</h4>
 <p>So both of our models have a strong adjusted R-squared and now only one
 question remains.</p>
 <p>How much singles, strike_rates, and fours a team needs for a run
 diffrential of +45?</p>
-<h4 id="conclusion">Conclusion</h4>
 <p>Let’s solve this with a use case, the team Mumbai Indians have made it
 to almost every playoff. Like Depodesta lets assume that the Mumbai
 Indians will roughly have the same stats as the 2019. So we will use
@@ -618,37 +618,48 @@ their 2019 season as an example and predict how much they will score in
 <p>RA = -666.6240 + 963.7276(OSR) + 3.0882(fours_allowed) +
 1.5712(singles_allowed) Let’s substitute the Indians’ 2020 data in this
 formula</p>
-<p>RA = -666.6240 + 963.7276(1.2753) + 3.0882(190) + 1.5712(594) =
--666.6240 + 1227.9157 + 586.758 + 972.5728<br>
-≈ 2120</p>
-<p>In 2020 the Indians are predicted to allow 2120 runs and if they need a
-run differential of +55 they will need to approximately score 2175 runs
+<p>RA = -666.6240 + 963.7276(1.2753) + 3.0882(190) + 1.5712(619)
+≈ 2121</p>
+<p>In 2020 the Indians are predicted to allow 2121 runs and if they need a
+run differential of +55 they will need to approximately score 2176 runs
 to make it to the playoffs.</p>
 <p>This is where recruitment came into play. Now Mumbai Indians management
 would want to build a team that would have strike rate, no of singles
-and no of fours to a number which will score more than 2175 runs. Lets
+and no of fours to a number which will score more than 2176 runs. Lets
 verify if our math actually pays off.</p>
-<p>We will substitute the actual values for those metrics. In 2020 these
+<p>We will substitute the actual values for those metrics. In 2019 these
 were the Mumbai Indians’ stats:</p>
-<p>OSR : 1.2753 singles_allowed : 594 fours_allowed : 197</p>
-<p>SR: 1.4558 singles : 611 fours : 193</p>
+<p>OSR : 1.2753
+singles_allowed : 594
+fours_allowed : 197</p>
+<p>SR: 1.4558
+singles : 611
+fours : 193</p>
 <ol>
-<li>Plugging in the values of the 2020 season to the runs allowed
+<li>Plugging in the values of the 2019 season to the runs allowed
 regression equation we get</li>
 </ol>
-<p>RA = -666.6240 + 963.7276(1.2753) + 3.0882(197) + 1.5712(594) ≈ 2104</p>
+<p>RA =  -666.6240 + 963.7276(1.2753) + 3.0882(190) + 1.5712(619)  ≈ 2121</p>
 <p>Actual runs_allowed by Mumbai Indians in 2020 were 2089</p>
 <ol start="2">
 <li>Plugging in the values to the runs scored regression equation we get</li>
 </ol>
-<p>RA = -666.6240 + 988.1124(1.4558) + 2.7879(193) + 1.5214(611) ≈ 2239</p>
+<p>RS = -666.6240 + 988.1124(1.3867) + 2.7879(206) + 1.5214(637) ≈ 2247</p>
 <p>Actual runs_scored by Mumbai Indians in 2020 were 2293</p>
 <ol start="3">
-<li>No of wins regression equation</li>
-</ol>
-<p>RD = 2293-2089 = 204</p>
-<p>W = 7.055556 + 204(0.01074)
+<li>
+<p>We predicted that for a team to make it the playoffs they need to score 55-60 runs more than they allow
+In 2020 Mumbai Indian allowed 2089 runs and scored 2293 runs
+Thus,
+RD = 2293 - 2089 = 204
+Which is way greater than +55 or +60</p>
+</li>
+<li>
+<p>Evaluating our wins regression equation by plugging actual RD for Mumbai Indians in 202.
+W = 7.055556 + 204(0.01074)
 W = 9</p>
+</li>
+</ol>
 <p>Actual games won by Mumbai Indians in 2020 were 9</p>
 <p>Almost all of our math adds up. While there are some accuracy issue due
 to the lack of data, we have successfully answered a lot of questions
